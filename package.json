@@ -1,0 +1,29 @@
+{
+  "name": "video-crawler",
+  "version": "1.0.0",
+  "description": "crawl video site",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "node dist/demo.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/soonfy/soonfy_video_crawler.git"
+  },
+  "keywords": [
+    "video",
+    "crawler"
+  ],
+  "author": "soonfy <soonfy@163.com> (https://github.com/soonfy)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soonfy/soonfy_video_crawler/issues"
+  },
+  "homepage": "https://github.com/soonfy/soonfy_video_crawler#readme",
+  "dependencies": {
+    "mongoose": "^4.10.6"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^4.7.17"
+  }
+}

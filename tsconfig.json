@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "module": "commonjs", //模块文件生成
+    "allowJs": false,  //是否编译js文件
+    "target": "es6",  //es版本
+    "allowUnreachableCode": false,  //是否显示不可到达代码
+    "allowUnusedLabels": false, //是否显示无用标签
+    "alwaysStrict": true, //添加use strict
+    "charset": "utf-8", //编译后文件编码
+    "declaration": true,  //自动生成.d.ts文件
+    "declarationDir": "./typings",  //.d.ts文件路径
+    "inlineSourceMap": false, //文件内部显示source map
+    "sourceMap": false, //生成source map
+    "listFiles": true,  //是否列出编译源文件
+    "listEmittedFiles": true, //是否列出编译后文件
+    "moduleResolution": "node", //模块编译规则
+    "outDir": "./main", //编译文件路径
+    "pretty": true, //显示提示与错误
+    "removeComments": true, //移除注释
+    "jsx": "preserve" //.tsx支持的.jsx
+  },
+  "include": [
+    // 编译源文件
+    "./*.ts",
+    "./crawlers/*.ts",
+    "./parsers/*.ts",
+    "./models/*.ts"
+  ],
+  "exclude": [
+    // 排除编译文件
+    "./*.js",
+    "./*.json",
+    "./*.md",
+    "./node_modules",
+    "./typings",
+    "./main"
+  ]
+}
