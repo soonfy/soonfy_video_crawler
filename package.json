@@ -21,7 +21,10 @@
   },
   "homepage": "https://github.com/soonfy/soonfy_video_crawler#readme",
   "dependencies": {
-    "mongoose": "^4.10.6"
+    "eponajs": "file:../thracia/lib/eponajs",
+    "korok": "file:../thracia/lib/korok",
+    "mongoose": "^4.10.6",
+    "warpipe": "file:../thracia/lib/warpipe"
   },
   "devDependencies": {
     "@types/mongoose": "^4.7.17"
