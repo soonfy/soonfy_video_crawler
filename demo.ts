@@ -20,7 +20,6 @@ const start = async () => {
     fs.writeFileSync('./logs/error.csv', '', 'utf-8');
     fs.writeFileSync('./logs/play.csv', '', 'utf-8');
     fs.writeFileSync('./logs/nouri.csv', '', 'utf-8');
-    let site = 'qq'
     let films = await FilmDetail.find({ isDeleted: { $ne: true }, status: { $gte: 0 } });
     console.log(films.length);
     let index = 0;
@@ -66,13 +65,13 @@ const start = async () => {
           uri,
           site,
           showType: film.showType,
-          year: film.name.match(/\s+(\d+)/) ? film.name.match(/\s+(\d+)/)[1] : ''
+          year: name.match(/\s+(\d+)/) ? name.match(/\s+(\d+)/)[1] : ''
         }
         console.log(_film);
         let resp = await Crawlers.crawl([_film]);
         console.log(resp);
         if (!resp) {
-          fs.appendFileSync('./logs/error.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
+          fs.appendFileSync('./logs/error.csv', [name, site, uri].join('\t') + '\n', 'utf-8');
           continue;
         }
         let {vids, plays} = resp;
@@ -83,11 +82,11 @@ const start = async () => {
         plays = plays.filter(x => x);
         if (vids.length !== plays.length) {
           console.error('id play 数量不一致。');
-          fs.appendFileSync('./logs/error.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
+          fs.appendFileSync('./logs/error.csv', [name, site, uri].join('\t') + '\n', 'utf-8');
           continue;
         }
         let cplay = plays.reduce((a, b) => a + b, 0);
-        fs.appendFileSync('./logs/play.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
+        fs.appendFileSync('./logs/play.csv', [name, site, uri, cplay].join('\t') + '\n', 'utf-8');
         let temp = {
           film_id,
           site,
@@ -121,7 +120,7 @@ const start = async () => {
         data = await Promise.all(promises);
         console.log(data);
       } else {
-        fs.appendFileSync('./logs/nouri.csv', [film.name, site].join('\t') + '\n', 'utf-8');
+        fs.appendFileSync('./logs/nouri.csv', [name, site].join('\t') + '\n', 'utf-8');
       }
     }
     console.log('all film over.');
