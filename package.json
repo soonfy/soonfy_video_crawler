@@ -23,10 +23,12 @@
   "dependencies": {
     "eponajs": "file:../thracia/lib/eponajs",
     "korok": "file:../thracia/lib/korok",
+    "lodash": "^4.17.4",
     "mongoose": "^4.10.6",
     "warpipe": "file:../thracia/lib/warpipe"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.66",
     "@types/mongoose": "^4.7.17"
   }
 }
