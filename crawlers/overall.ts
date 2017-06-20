@@ -6,6 +6,8 @@ import { crawlLetv } from '../parsers/letv';
 import { crawlSohu } from '../parsers/sohu';
 import { crawlYouku } from '../parsers/youku';
 import { crawlMgtv } from '../parsers/mgtv';
+import { crawlPptv } from '../parsers/pptv';
+import { crawlAcfun } from '../parsers/acfun';
 
 
 /**
@@ -37,6 +39,12 @@ const crawl = async (films) => {
           break;
         case 'mgtv':
           data = await crawlMgtv([film]);
+          break;
+        case 'pptv':
+          data = await crawlPptv([film]);
+          break;
+        case 'acfun':
+          data = await crawlAcfun([film]);
           break;
 
         default:

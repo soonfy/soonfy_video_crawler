@@ -115,7 +115,7 @@ const crawlSohu = async (films) => {
   try {
     let promises = films.map(async (film) => {
       let vdata = await epona.queue(film.uri);
-      console.log(vdata);
+      // console.log(vdata);
       if (!vdata.vid) {
         return;
       }

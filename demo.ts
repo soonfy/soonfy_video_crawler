@@ -26,29 +26,37 @@ const start = async () => {
     let index = 0;
     for (let film of films) {
       console.log('index', ++index);
-      console.log(film.name);
-      let site = film.site;
+      let site = film.site, name = film.name;
+      console.log(site);
+      console.log(name);
       let film_id = film.filmId;
       let uri;
+
       switch (site) {
         case 'iqiyi':
-          uri = film.qqInfos && film.qqInfos.qquri;
-          break;
-          case 'qq':
           uri = film.iqiyiInfos && film.iqiyiInfos.iqiyiuri;
           break;
-          case 'letv':
+        case 'qq':
+          uri = film.qqInfos && film.qqInfos.qquri;
+          break;
+        case 'letv':
           uri = film.leInfos && film.leInfos.leuri;
           break;
-          case 'sohu':
+        case 'sohu':
           uri = film.sohuInfos && film.sohuInfos.sohuuri;
           break;
-          case 'youku':
+        case 'youku':
           uri = film.youkuInfos && film.youkuInfos.youkuuri;
           break;
-          case 'mgtv':
+        case 'mgtv':
           uri = film.mgtvInfos && film.mgtvInfos.mgtvuri;
           break;
+        case 'pptv':
+          uri = film.pptvInfos && film.pptvInfos.pptvuri;
+          break;
+        // case 'acfun':
+        //   uri = film.acfunInfos && film.acfunInfos.acfunuri;
+        //   break;
 
         default:
           break;
@@ -64,6 +72,7 @@ const start = async () => {
         let resp = await Crawlers.crawl([_film]);
         console.log(resp);
         if (!resp) {
+          fs.appendFileSync('./logs/error.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
           continue;
         }
         let {vids, plays} = resp;
@@ -75,6 +84,7 @@ const start = async () => {
         if (vids.length !== plays.length) {
           console.error('id play 数量不一致。');
           fs.appendFileSync('./logs/error.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
+          continue;
         }
         let cplay = plays.reduce((a, b) => a + b, 0);
         fs.appendFileSync('./logs/play.csv', [film.name, site, uri, cplay].join('\t') + '\n', 'utf-8');
@@ -105,8 +115,8 @@ const start = async () => {
             created_at: new Date(),
             is_real: 1
           }
-          await FilmPlistEpisodePlay.findOneAndUpdate({ _id: play._id }, { $set: play }, {upsert: true, new: true});
-          return await FilmPlistEpisode.findOneAndUpdate({ _id: temp._id }, { $set: temp }, {upsert: true, new: true});
+          await FilmPlistEpisodePlay.findOneAndUpdate({ _id: play._id }, { $set: play }, { upsert: true, new: true });
+          return await FilmPlistEpisode.findOneAndUpdate({ _id: temp._id }, { $set: temp }, { upsert: true, new: true });
         })
         data = await Promise.all(promises);
         console.log(data);

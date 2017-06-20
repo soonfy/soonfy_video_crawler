@@ -6,33 +6,6 @@ const reg_play = /^http\:\/\/www\.mgtv\.com\/\w+\/(\w+)\/\w+\.html/;
 
 /**
  *
- *  暂未使用
- *  播放页提取 vid, cid
- *
- */
-epona
-  .on(['暂未使用'], {
-    vid: {
-      sels: [/var\s*playlistId\s*\=\s*\"*(\d+)/],
-
-      filters: (match) => match[1] - 0
-    },
-    cid: {
-      sels: [/var\s*cid\s*\=\s*\"*(\d+)/],
-      filters: (match) => match[1] - 0
-    }
-  })
-  .type('html')
-  .then((data, resp) => {
-    // console.log(data);
-    return data;
-  })
-  .catch((error) => {
-    console.error(error);
-  })
-
-/**
- *
  *  提取 play
  *
  */
@@ -42,39 +15,6 @@ epona
     value: {
       sels: ['data::all'],
       filters: 'numbers'
-    }
-  })
-  .type('xml')
-  .then((data) => {
-    // console.log(data);
-    return data;
-  })
-  .catch((error) => {
-    console.error(error);
-  })
-
-/**
- *
- *  暂未使用
- *  综艺提取 years, ids
- *
- */
-epona
-  .on(['暂未使用'], {
-    // root: ':: html()',
-    date: {
-      sels: ['months > *'],
-      nodes: {
-        year: ['::tag()'],
-        month: ['::text()']
-      }
-    },
-    items: {
-      sels: ['videos *'],
-      nodes: {
-        date: ['::showDate'],
-        id: ['::vid']
-      }
     }
   })
   .type('xml')

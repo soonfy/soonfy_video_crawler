@@ -97,8 +97,6 @@ const crawlQQ = async (films) => {
         // 纪录片
         case 26:
         // 旅游
-        // case 31:
-        // 生活
         case 106:
           // 少儿
           uri = `http://data.video.qq.com/fcgi-bin/data?tid=70&appid=10001007&appkey=e075742beb866145&otype=json&idlist=${vdata.vid}`;
@@ -121,6 +119,8 @@ const crawlQQ = async (films) => {
         // 综艺
         case 25:
         // 时尚
+        case 31:
+        // 生活
         case 60:
           // 母婴
           uri = `http://s.video.qq.com/loadplaylist?type=6&plname=qq&otype=json&id=${vdata.vid}`;

@@ -6,32 +6,6 @@ const reg_uri = /(http\:\/\/list\.youku\.com\/show\/id\_[\w\d]+\.html)/;
 
 /**
  *
- *  播放页提取 vid, cid
- *
- */
-epona
-  .on(['httpss://list.youku.com/'], {
-    vid: {
-      sels: [/var\s*playlistId\s*\=\s*\"*(\d+)/],
-
-      filters: (match) => match[1] - 0
-    },
-    cid: {
-      sels: [/var\s*cid\s*\=\s*\"*(\d+)/],
-      filters: (match) => match[1] - 0
-    }
-  })
-  .type('html')
-  .then((data, resp) => {
-    // console.log(data);
-    return data;
-  })
-  .catch((error) => {
-    console.error(error);
-  })
-
-/**
- *
  *  提取 play
  *
  */
@@ -54,38 +28,6 @@ epona
     }
   })
   .type('html')
-  .then((data) => {
-    // console.log(data);
-    return data;
-  })
-  .catch((error) => {
-    console.error(error);
-  })
-
-/**
- *
- *  综艺提取 years, ids
- *
- */
-epona
-  .on(['pl.hd.sohu.com'], {
-    // root: ':: html()',
-    date: {
-      sels: ['months > *'],
-      nodes: {
-        year: ['::tag()'],
-        month: ['::text()']
-      }
-    },
-    items: {
-      sels: ['videos *'],
-      nodes: {
-        date: ['::showDate'],
-        id: ['::vid']
-      }
-    }
-  })
-  .type('xml')
   .then((data) => {
     // console.log(data);
     return data;
