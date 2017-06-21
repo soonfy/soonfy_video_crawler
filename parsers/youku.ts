@@ -51,11 +51,13 @@ const crawlYouku = async (films) => {
             plays.push(pdata.value);
           }
         }
-        return {
+      } else {
+        console.error(`视频链接错误，未获取到 vid。`);
+      }
+      return {
           vids,
           plays
         }
-      }
     })
     let data = await Promise.all(promises);
     return data[0];

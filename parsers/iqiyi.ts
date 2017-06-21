@@ -14,8 +14,9 @@ epona
     vid: ['#videoShopGuideWrap::data-shop-albumid',
       '#widget-qiyu-zebra::data-qiyu-albumid',
       '#playerAreaScore::data-score-tvid',
-      // '#flashbox::data-player-tvid',
-      '#videoArea::data-player-tvid'],
+      '#videoArea::data-player-tvid',
+      '#flashbox::data-player-tvid',
+    ],
     cid: {
       sels: /cid\s*:\s*(\d+)\,/,
       filters: (match) => match[1] - 0
@@ -117,28 +118,31 @@ epona
 const crawlIqiyi = async (films) => {
   try {
     let promises = films.map(async (film) => {
+      let vids = [], plays = [];
       let vdata = await epona.queue(film.uri);
-      // console.log(vdata);
+      console.log(vdata);
       if (!vdata.vid) {
-        console.error(`爱奇艺链接错误。`);
-        return;
+        console.error(`视频链接错误，未获取到 vid。`);
+        return {
+          vids,
+          plays
+        }
       }
       let uri, ldata, pdata;
-      let vids = [], plays = [];
       switch (vdata.cid) {
         // 单个id
         case 1:
         // 电影
         case 16:
           // 微电影
-          vids.push(vdata.vid);
           uri = `http://mixer.video.iqiyi.com/jp/mixin/videos/${vdata.vid}/`;
           pdata = await epona.queue(uri);
           // console.log(pdata);
+          vids.push(vdata.vid);
           plays.push(pdata.value);
           break;
 
-          // 首集id
+        // 首集id
         case 2:
         // 电视剧
         case 4:
@@ -153,8 +157,8 @@ const crawlIqiyi = async (films) => {
             uri = `http://mixer.video.iqiyi.com/jp/mixin/videos/${vids[0]}/`;
             pdata = await epona.queue(uri);
             plays.push(pdata.value);
-          } else {
-            // 部分动漫电影 --> 年兽大作战
+          } else if (vdata.cid === 15) {
+            // 部分儿童电影 --> 年兽大作战
             uri = `http://cache.video.iqiyi.com/jp/sdlst/${vdata.cid}/${vdata.vid}/`;
             ldata = await epona.queue(uri);
             // console.log(ldata);
@@ -173,10 +177,17 @@ const crawlIqiyi = async (films) => {
             pdata.map(_data => {
               plays.push(_data.value);
             })
+          } else if (vdata.cid === 4) {
+            // 部分动漫电影 --> 熊出没·奇幻空间
+            uri = `http://mixer.video.iqiyi.com/jp/mixin/videos/${vdata.vid}/`;
+            pdata = await epona.queue(uri);
+            // console.log(pdata);
+            vids.push(vdata.vid);
+            plays.push(pdata.value);
           }
           break;
 
-          // 多个ids
+        // 多个ids
         case 3:
         // 纪录片
         case 5:

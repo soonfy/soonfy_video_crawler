@@ -62,7 +62,7 @@ epona
  */
 epona
   .on(['d.api.m.le.com'], {
-    root: ':: html()',
+    // root: ':: html()',
     years: ['years *'],
     year: ['data ::currentYear'],
     ids: ['list *::vid']
@@ -79,10 +79,17 @@ epona
 const crawlLetv = async (films) => {
   try {
     let promises = films.map(async (film) => {
-      let vdata = await epona.queue(film.uri);
-      // console.log(vdata);
-      let uri, ldata, pdata;
       let vids = [], plays = [];
+      let vdata = await epona.queue(film.uri);
+      console.log(vdata);
+      if (!vdata.vid) {
+        console.error(`视频链接错误，未获取到 vid。`);
+        return {
+          vids,
+          plays
+        }
+      }
+      let uri, ldata, pdata;
       switch (vdata.cid) {
         // 单个 id
         case 1:
@@ -106,8 +113,14 @@ const crawlLetv = async (films) => {
         case 16:
           // 纪录片
           if (film.showType === 1) {
+            // uri = `http://d.api.m.le.com/detail/getPeriod?pid=${vdata.vid}&platform=pc&_=${Date.now()}`;
+            // ldata = await epona.queue(uri);
+            // console.log(ldata);
             uri = `http://d.api.m.le.com/detail/getPeriod?pid=${vdata.vid}&year=${film.year}&platform=pc`;
             ldata = await epona.queue(uri);
+            if (!ldata.ids || ldata.ids.length === 0) {
+              break;
+            }
             let uris = ldata.ids.map(x => {
               vids.push(x);
               return `http://v.stat.letv.com/vplay/queryMmsTotalPCount?vid=${x}`;

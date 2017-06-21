@@ -114,13 +114,17 @@ epona
 const crawlSohu = async (films) => {
   try {
     let promises = films.map(async (film) => {
+      let vids = [], plays = [];
       let vdata = await epona.queue(film.uri);
-      // console.log(vdata);
+      console.log(vdata);
       if (!vdata.vid) {
-        return;
+        console.error(`视频链接错误，未获取到 vid。`);
+        return {
+          vids,
+          plays
+        }
       }
       let uri, ldata, pdata;
-      let vids = [], plays = [];
       switch (vdata.cid) {
         // 单个 id
         case 0:
@@ -157,6 +161,9 @@ const crawlSohu = async (films) => {
             uri = `http://pl.hd.sohu.com/videolist?playlistid=${vdata.vid}&order=1`;
             ldata = await epona.queue(uri);
             // console.log(ldata);
+            if (!ldata.items || ldata.items.length === 0) {
+              break;
+            }
             let items = ldata.items.filter(x => {
               return x.date && x.date.startsWith(film.year);
             })

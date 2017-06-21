@@ -1,8 +1,29 @@
-import * as Crawlers from './index';
 import * as fs from 'fs';
 
+import * as moment from 'moment';
 import * as mongoose from 'mongoose';
-mongoose.connect('mongodb://localhost/tarantula_2');
+
+/**
+ *
+ *  配置文件
+ *
+ */
+let Config;
+try {
+  Config = require('../config.json');
+} catch (error) {
+  try {
+    Config = require('./config.json');
+  } catch (error) {
+    console.error(`配置文件 config.json 路径没找到`);
+    process.exit();
+  }
+}
+console.log(Config);
+mongoose.connect(Config && Config.db && Config.db.uris);
+
+import * as Crawlers from './index';
+
 import { FilmDetail } from './models/film_detail';
 import { FilmPlist } from './models/film_plist';
 import { FilmPlistEpisode } from './models/film_plist_episode';
@@ -17,10 +38,11 @@ const sleep = async (ss) => {
 
 const start = async () => {
   try {
+    fs.writeFileSync('./logs/unde.csv', '', 'utf-8');
     fs.writeFileSync('./logs/error.csv', '', 'utf-8');
     fs.writeFileSync('./logs/play.csv', '', 'utf-8');
     fs.writeFileSync('./logs/nouri.csv', '', 'utf-8');
-    let films = await FilmDetail.find({ isDeleted: { $ne: true }, status: { $gte: 0 } });
+    let films = await FilmDetail.find({ isDeleted: { $ne: true }, status: { $gte: 0 }, });
     console.log(films.length);
     let index = 0;
     for (let film of films) {
@@ -71,8 +93,8 @@ const start = async () => {
         let resp = await Crawlers.crawl([_film]);
         console.log(resp);
         if (!resp) {
-          fs.appendFileSync('./logs/error.csv', [name, site, uri].join('\t') + '\n', 'utf-8');
-          continue;
+          console.error('返回值是 undefined。');
+          fs.appendFileSync('./logs/unde.csv', [name, site, uri].join('\t') + '\n', 'utf-8');
         }
         let {vids, plays} = resp;
         if (!vids || !plays) {
@@ -97,7 +119,7 @@ const start = async () => {
         await FilmPlist.remove({ film_id, site });
         let data = await FilmPlist.findOneAndUpdate(temp, { $set: temp }, { upsert: true, new: true });
         await FilmPlistEpisode.remove({ film_plist_id: data._id });
-        let date = '20170620';
+        let date = new Date(moment().format('YYYY-MM-DD'));
         let promises = vids.map(async (vid, i) => {
           let temp = {
             _id: `${site}:${vid}`,

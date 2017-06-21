@@ -38,6 +38,8 @@ const crawlMgtv = async (films) => {
           vids.push(match[1]);
           plays.push(pdata.value);
         }
+      } else {
+        console.error(`视频链接错误，未获取到 vid。`);
       }
       return {
         vids,

@@ -9,7 +9,7 @@ const FilmPlistEpisodePlaySchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   value: {
     type: Number,

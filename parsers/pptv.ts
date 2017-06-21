@@ -95,12 +95,18 @@ const crawlPptv = async (films) => {
   try {
     let promises = films.map(async (film) => {
       let vdata = await epona.queue(film.uri);
-      // console.log(vdata);
+      console.log(vdata);
       let pdata, uri, vids = [], plays = [];
       if (film.showType === 1) {
         uri = `http://apis.web.pptv.com/show/videoList?pid=${vdata.vid}&vt=22`;
         pdata = await epona.queue(uri);
         // console.log(pdata);
+        if (!pdata.items || pdata.items.length === 0) {
+          return {
+            vids,
+            plays
+          }
+        }
         let items = pdata.items.filter(x => {
           return x.date && x.date.startsWith(film.year);
         })

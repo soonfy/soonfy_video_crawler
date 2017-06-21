@@ -3,3 +3,5 @@
 /typings/
 /package-lock.json
 /logs/
+/temp/
+/config.json

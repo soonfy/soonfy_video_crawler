@@ -79,10 +79,17 @@ epona
 const crawlQQ = async (films) => {
   try {
     let promises = films.map(async (film) => {
+      let vids = [], plays = [];
       let vdata = await epona.queue(film.uri);
       console.log(vdata);
+      if (!vdata.vid) {
+        console.error(`视频链接错误，未获取到 vid。`);
+        return {
+          vids,
+          plays
+        }
+      }
       let uri, ldata, pdata, uris, value;
-      let vids = [], plays = [];
       switch (vdata.cid) {
         // 单个 id
         case 1:
@@ -126,7 +133,7 @@ const crawlQQ = async (films) => {
           uri = `http://s.video.qq.com/loadplaylist?type=6&plname=qq&otype=json&id=${vdata.vid}`;
           ldata = await epona.queue(uri);
           ldata.ids = [];
-          console.log(ldata);
+          // console.log(ldata);
           // console.log(ldata.ids.length);
           if (film.showType === 1) {
             uri = `http://s.video.qq.com/loadplaylist?type=4&plname=qq&otype=json&id=${vdata.vid}&year=${film.year}`;
@@ -140,6 +147,9 @@ const crawlQQ = async (films) => {
             }
           }
           vids = ldata.ids;
+          if (!ldata.ids || ldata.ids.length === 0) {
+            break;
+          }
           uris = ldata.ids.map(x => `http://data.video.qq.com/fcgi-bin/data?tid=70&appid=10001007&appkey=e075742beb866145&otype=json&idlist=${x}`);
           pdata = await epona.queue(uris);
           // console.log(pdata);
