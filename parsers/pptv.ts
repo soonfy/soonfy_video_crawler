@@ -97,7 +97,7 @@ const crawlPptv = async (films) => {
       let vdata = await epona.queue(film.uri);
       console.log(vdata);
       let pdata, uri, vids = [], plays = [];
-      if (film.showType === 1) {
+      if (film.show_type === 1) {
         uri = `http://apis.web.pptv.com/show/videoList?pid=${vdata.vid}&vt=22`;
         pdata = await epona.queue(uri);
         // console.log(pdata);

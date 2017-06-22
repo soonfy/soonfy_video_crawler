@@ -1,5 +1,4 @@
 import * as Epona from 'eponajs';
-import * as fs from 'fs';
 
 const epona = Epona.new({ concurrent: 10 });
 
@@ -135,7 +134,7 @@ const crawlQQ = async (films) => {
           ldata.ids = [];
           // console.log(ldata);
           // console.log(ldata.ids.length);
-          if (film.showType === 1) {
+          if (film.show_type === 1) {
             uri = `http://s.video.qq.com/loadplaylist?type=4&plname=qq&otype=json&id=${vdata.vid}&year=${film.year}`;
             let _ldata = await epona.queue(uri);
             ldata.ids = _ldata.ids;
@@ -146,7 +145,7 @@ const crawlQQ = async (films) => {
               ldata.ids = ldata.ids.concat(_ldata.ids);
             }
           }
-          vids = ldata.ids;
+          vids = ldata.ids || [];
           if (!ldata.ids || ldata.ids.length === 0) {
             break;
           }
@@ -160,7 +159,6 @@ const crawlQQ = async (films) => {
 
         default:
           console.error(`channel id ${vdata.cid} is error.`);
-          fs.appendFileSync('./logs/qq.ts.log', [film.uri, vdata.cid].join('\t') + '\n', 'utf-8');
           break;
 
       }

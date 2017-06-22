@@ -1,5 +1,4 @@
 import * as Epona from 'eponajs';
-import * as fs from 'fs';
 
 const epona = Epona.new({ concurrent: 10 });
 const reg_vid = /www\.let?v?\.com\/\w+\/([\w\d]+)\.html/;
@@ -157,7 +156,7 @@ const crawlSohu = async (films) => {
         // 综艺
         case 8:
           // 纪录片
-          if (film.showType === 1) {
+          if (film.show_type === 1) {
             uri = `http://pl.hd.sohu.com/videolist?playlistid=${vdata.vid}&order=1`;
             ldata = await epona.queue(uri);
             // console.log(ldata);
@@ -189,7 +188,6 @@ const crawlSohu = async (films) => {
 
         default:
           console.error(`channel id ${vdata.cid} is error.`);
-          fs.appendFileSync('./logs/sohu.ts.log', [film.uri, vdata.cid].join('\t') + '\n', 'utf-8');
           break;
       }
       return {

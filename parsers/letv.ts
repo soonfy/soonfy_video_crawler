@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as Epona from 'eponajs';
 
 const epona = Epona.new({ concurrent: 10 });
@@ -112,7 +111,7 @@ const crawlLetv = async (films) => {
         // 综艺
         case 16:
           // 纪录片
-          if (film.showType === 1) {
+          if (film.show_type === 1) {
             // uri = `http://d.api.m.le.com/detail/getPeriod?pid=${vdata.vid}&platform=pc&_=${Date.now()}`;
             // ldata = await epona.queue(uri);
             // console.log(ldata);
@@ -144,7 +143,6 @@ const crawlLetv = async (films) => {
 
         default:
           console.error(`channel id ${vdata.cid} is error.`);
-          fs.appendFileSync('./logs/letv.ts.log', [film.uri, vdata.cid].join('\t') + '\n', 'utf-8');
           break;
 
       }

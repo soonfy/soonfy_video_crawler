@@ -1,5 +1,9 @@
-import { crawl } from './crawlers/overall';
+import { crawl, store, count, fit, main } from './crawlers/overall';
 
 export {
-  crawl
+  crawl,
+  store,
+  count,
+  fit,
+  main
 }

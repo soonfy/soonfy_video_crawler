@@ -1,6 +1,4 @@
 import * as Epona from 'eponajs';
-import * as _ from 'lodash';
-import * as fs from 'fs';
 
 const epona = Epona.new({ concurrent: 10 });
 
@@ -128,8 +126,9 @@ const crawlIqiyi = async (films) => {
           plays
         }
       }
+      let cid = vdata.cid;
       let uri, ldata, pdata;
-      switch (vdata.cid) {
+      switch (cid) {
         // 单个id
         case 1:
         // 电影
@@ -225,15 +224,28 @@ const crawlIqiyi = async (films) => {
         case 32:
           // 健康
           let uris;
-          if (film.showType === 1) {
+          if (film.show_type === 1) {
             uris = [`http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${film.year}/`];
           } else {
             uri = `http://cache.video.iqiyi.com/jp/sdlst/${vdata.cid}/${vdata.vid}/`;
             ldata = await epona.queue(uri);
             // console.log(ldata);
-            uris = ldata.years.map(year => `http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${year}/`);
+            if (!ldata.years && cid === 27) {
+              // 原创网络剧 --> 恋上播霸
+              uri = `http://cache.video.iqiyi.com/jp/avlist/${vdata.vid}/`;
+              ldata = await epona.queue(uri);
+              // console.log(ldata);
+              if (ldata.ids && ldata.ids.length >= 1) {
+                vids = ldata.ids.slice(0, 1);
+                uri = `http://mixer.video.iqiyi.com/jp/mixin/videos/${vids[0]}/`;
+                pdata = await epona.queue(uri);
+                plays.push(pdata.value);
+                break;
+              }
+            } else {
+              uris = ldata.years.map(year => `http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${year}/`);
+            }
           }
-
           ldata = await epona.queue(uris);
           // console.log(ldata);
           ldata.map(_data => {
@@ -251,7 +263,6 @@ const crawlIqiyi = async (films) => {
 
         default:
           console.error(`channel id ${vdata.cid} is error.`);
-          fs.appendFileSync('./logs/iqiyi.ts.log', [film.uri, vdata.cid].join('\t') + '\n', 'utf-8');
           break;
       }
       return {
