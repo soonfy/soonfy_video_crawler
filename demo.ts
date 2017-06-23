@@ -16,9 +16,9 @@ const sleep = async (ss) => {
 
 const start = async () => {
   try {
-    fs.writeFileSync('./logs/error.csv', '', 'utf-8');
-    fs.writeFileSync('./logs/play.csv', '', 'utf-8');
-    fs.writeFileSync('./logs/nouri.csv', '', 'utf-8');
+    // fs.writeFileSync('./logs/error.csv', '', 'utf-8');
+    // fs.writeFileSync('./logs/play.csv', '', 'utf-8');
+    // fs.writeFileSync('./logs/nouri.csv', '', 'utf-8');
     let films = await FilmDetail.find({ isDeleted: { $ne: true }, status: { $gte: 0 }, });
     console.log(films.length);
     let index = 0;
@@ -71,14 +71,15 @@ const start = async () => {
         }
         console.log(_film);
         let cfilm = await Crawlers.main(_film);
+        // let cfilm = await Crawlers.crawl(_film);
         console.log(cfilm);
-        if (cfilm.cplay) {
-          fs.appendFileSync('./logs/play.csv', [name, site, uri, cfilm.cplay].join('\t') + '\n', 'utf-8');
-        } else {
-          fs.appendFileSync('./logs/error.csv', [name, site, uri, cfilm.vids, cfilm.plays].join('\t') + '\n', 'utf-8');
-        }
+        // if (cfilm.cplay) {
+        //   fs.appendFileSync('./logs/play.csv', [name, site, uri, cfilm.cplay].join('\t') + '\n', 'utf-8');
+        // } else {
+        //   fs.appendFileSync('./logs/error.csv', [name, site, uri, cfilm.vids, cfilm.plays].join('\t') + '\n', 'utf-8');
+        // }
       } else {
-        fs.appendFileSync('./logs/nouri.csv', [name, site].join('\t') + '\n', 'utf-8');
+        // fs.appendFileSync('./logs/nouri.csv', [name, site].join('\t') + '\n', 'utf-8');
       }
     }
     console.log('all film over.');

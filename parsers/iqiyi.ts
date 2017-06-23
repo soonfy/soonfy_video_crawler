@@ -4,6 +4,41 @@ const epona = Epona.new({ concurrent: 10 });
 
 /**
  *
+ *  专辑页提取 vid, cid
+ *
+ */
+epona
+  .on(['iqiyi.com/a_'], {
+    vid: ['#widget-playcount::data-playcount-albumid',
+    '.album-fun-fav::data-subscribe-albumid'],
+    cid: {
+      sels: /cid\s*:\s*(\d+)\,/,
+      filters: (match) => match[1] - 0
+    },
+    ids_back: {
+      sels: ['.juji-list > *'],
+      nodes: {
+        vid: ['::data-albumid'],
+        cid: ['::data-cid']
+      }
+    }
+  })
+  .type('xml')
+  .then((data, resp) => {
+    // console.log(data);
+    if (!data.vid && !data.cid && data.ids_back.length > 0) {
+      // 当时的热门综艺
+      data.vid = data.ids_back[0].vid;
+      data.cid = data.ids_back[0].cid - 0;
+    }
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
+/**
+ *
  *  播放页提取 vid, cid
  *
  */
@@ -137,8 +172,34 @@ const crawlIqiyi = async (films) => {
           uri = `http://mixer.video.iqiyi.com/jp/mixin/videos/${vdata.vid}/`;
           pdata = await epona.queue(uri);
           // console.log(pdata);
-          vids.push(vdata.vid);
-          plays.push(pdata.value);
+          if (pdata.value) {
+            vids.push(vdata.vid);
+            plays.push(pdata.value);
+          } else {
+            // 部分电影汇总 --> 爱奇艺爱电影
+            let uris;
+            if (film.show_type === 1) {
+              uris = [`http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${film.year}/`];
+            } else {
+              uri = `http://cache.video.iqiyi.com/jp/sdlst/${vdata.cid}/${vdata.vid}/`;
+              ldata = await epona.queue(uri);
+              // console.log(ldata);
+              uris = ldata.years.map(year => `http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${year}/`);
+            }
+            ldata = await epona.queue(uris);
+            // console.log(ldata);
+            ldata.map(_data => {
+              Array.prototype.push.apply(vids, _data.ids);
+            })
+            // console.log(vids);
+            uris = vids.map(vid => `http://mixer.video.iqiyi.com/jp/mixin/videos/${vid}/`);
+            // console.log(uris);
+            pdata = await epona.queue(uris);
+            // console.log(pdata);
+            pdata.map(_data => {
+              plays.push(_data.value);
+            })
+          }
           break;
 
         // 首集id

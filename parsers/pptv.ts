@@ -19,6 +19,29 @@ const format_play = (value) => {
  *
  */
 epona
+  .on(['pptv.com/show/'], {
+    luri: {
+      sels: ['.btn_more::href']
+    }
+  })
+  .type('html')
+  .then(async (data, resp) => {
+    if (data && data.luri) {
+      data = await epona.queue(data.luri);
+    }
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
+/**
+ *
+ *  播放页提取 vid, play
+ *
+ */
+epona
   .on(['pptv.com/page/'], {
     id: {
       sels: [/id\"\s*\:\s*\"*([\w\d]+)\"*\s*\,/],

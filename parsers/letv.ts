@@ -2,6 +2,8 @@ import * as Epona from 'eponajs';
 
 const epona = Epona.new({ concurrent: 10 });
 
+const reg_list = /www\.let?v?\.com\/\w+\/([\w\d]+).html/;
+
 /**
  *
  *  播放页提取 vid, cid
@@ -12,7 +14,7 @@ epona
     uri: ['.Info .more::href'],
     vid: {
       sels: [/var\s*\_\_INFO\_\_\s*\=\s*\{[\w\W]+?pid\"*\s*\:\s*\"*(\d+)/],
-      filters: (match) => match[1] - 0
+      filters: (match) => match[1] - 0 + ''
     },
     cid: {
       sels: [/var\s*\_\_INFO\_\_\s*\=\s*\{[\w\W]+?cid\"*\s*\:\s*\"*(\d+)/],
@@ -79,13 +81,23 @@ const crawlLetv = async (films) => {
   try {
     let promises = films.map(async (film) => {
       let vids = [], plays = [];
-      let vdata = await epona.queue(film.uri);
-      console.log(vdata);
-      if (!vdata.vid) {
-        console.error(`视频链接错误，未获取到 vid。`);
-        return {
-          vids,
-          plays
+
+      let vdata = {};
+      // 专辑页 都走综艺
+      let match = film.uri.match(reg_list);
+      if (match) {
+        vdata.vid = match[1];
+        vdata.cid = 11;
+        console.log(vdata);
+      } else {
+        let vdata = await epona.queue(film.uri);
+        console.log(vdata);
+        if (!vdata || !vdata.vid) {
+          console.error(`视频链接错误，未获取到 vid。`);
+          return {
+            vids,
+            plays
+          }
         }
       }
       let uri, ldata, pdata;

@@ -58,6 +58,9 @@ const OFFSET = 86400000;
  */
 const crawl = async (films) => {
   try {
+    if (!Array.isArray(films)) {
+      films = [films];
+    }
     let promises = films.map(async (film) => {
       // console.log(film);
       let data;
@@ -152,12 +155,12 @@ const store = async (film_play, action = 0) => {
       let cal = moment().format('YYYY-MM-DD');
       let date = new Date(cal);
       let _vid = {
-        _id: `${site}:${vid}`,
+        _id: `${detail._id}:${site}:${vid}`,
         film_plist_id: detail._id,
       };
       let _play = {
-        _id: `${site}:${vid}:${cal}`,
-        film_plist_episode_id: `${site}:${vid}`,
+        _id: `${_vid._id}:${cal}`,
+        film_plist_episode_id: `${_vid._id}`,
         date,
         value: plays[index],
         created_at: new Date(),
@@ -165,9 +168,9 @@ const store = async (film_play, action = 0) => {
       }
 
       // 可用
-      await FilmPlistEpisode.findOneAndUpdate({ _id: _vid._id }, { $set: _vid }, { upsert: true, new: true });
+      // await FilmPlistEpisode.findOneAndUpdate({ _id: _vid._id }, { $set: _vid }, { upsert: true, new: true });
       // 有去重 vid 的效果
-      // await FilmPlistEpisode.create(_vid);
+      await FilmPlistEpisode.create(_vid);
       let play = await FilmPlistEpisodePlay.findOneAndUpdate({ _id: _play._id }, { $set: _play }, { upsert: true, new: true });
 
       // 拟合数据
@@ -333,11 +336,12 @@ const fit = async (plays) => {
 /**
  *
  *  font interface
- *  输入 film
+ *  输入 film, action
+ *  action: 0 - 人为后台, 更新updated_at; 1 - 日常刷播放量, 不更新 updated_at
  *  film id, site, uri, showType, year
  *
  */
-const main = async (film) => {
+const main = async (film, action = 0) => {
   try {
     let resp = await crawl([film]);
     if (!resp) {
@@ -351,7 +355,7 @@ const main = async (film) => {
     vids = vids.filter(x => x);
     plays = plays.filter(x => x);
     if (vids.length === plays.length && plays.length > 0) {
-      let cfilm = await store(resp);
+      let cfilm = await store(resp, action);
       return cfilm;
     } else {
       console.error(`--> vids length != plays length or plays length == 0`);

@@ -4,6 +4,31 @@ const epona = Epona.new({ concurrent: 10 });
 
 /**
  *
+ *  专辑页提取 vid, cid
+ *
+ */
+epona
+  .on(['v.qq.com/detail'], {
+    text: {
+      sels: ['#_mod_comments::r-props'],
+    }
+  })
+  .type('xml')
+  .then((data, resp) => {
+    // console.log(data);
+    let text = data.text.replace(/\'/g, '"').replace(/\;/g, ',').replace(/\s+/g, '').replace(/\,\}/g, '}').replace('id', '"vid"').replace('type', '"cid"').replace('movComSet', '"tmovComSet"');
+    // console.log(text);
+    let id = JSON.parse(text);
+    data.vid = id.vid;
+    data.cid = id.cid - 0;
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
+/**
+ *
  *  播放页提取 vid, cid
  *
  */
@@ -67,7 +92,7 @@ epona
   .beforeParse(body => body.match(/QZOutputJson\=([\w\W]*)\;/)[1])
   .type('xml')
   .then((data, resp) => {
-    data.value ? data.value = data.value[0] - 0 : '';
+    data.value ? data.value = data.value[0] - 0 : 0;
     // console.log(data);
     return data;
   })

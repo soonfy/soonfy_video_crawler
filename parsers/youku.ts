@@ -3,6 +3,29 @@ import * as Epona from 'eponajs';
 const epona = Epona.new({ concurrent: 10 });
 const reg_list = /http\:\/\/list\.youku\.com\/show\/id\_([\w\d]+)\.html/;
 const reg_uri = /(http\:\/\/list\.youku\.com\/show\/id\_[\w\d]+\.html)/;
+const reg_play = /(http\:\/\/v\.youku\.com\/v_show\/id\_[\w\d=]+\.html)/;
+
+/**
+ *
+ *  播放页提取专辑页
+ *
+ */
+epona
+  .on(['youku.com/v_show/id_'], {
+    // root: ':: html()',
+    luri: ".desc-link::href"
+  })
+  .type('html')
+  .then((data) => {
+    // console.log(data);
+    if (data.luri && !data.luri.startsWith('http')) {
+      data.luri = `http:${data.luri}`;
+    }
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
 
 /**
  *
@@ -40,12 +63,21 @@ const crawlYouku = async (films) => {
   try {
     let promises = films.map(async (film) => {
       let vids = [], plays = [];
-      let match = film.uri && film.uri.match(reg_uri);
+      let uri = film.uri;
+      let match = film.uri && film.uri.match(reg_play);
       if (match) {
-        film.uri = match[1];
-        match = film.uri && film.uri.match(reg_list);
+        let ldata = await epona.queue(film.uri);
+        console.log(ldata);
+        if (ldata && ldata.luri) {
+          uri = ldata.luri;
+        }
+      }
+      match = uri && uri.match(reg_uri);
+      if (match) {
+        uri = match[1];
+        match = uri && uri.match(reg_list);
         if (match) {
-          let pdata = await epona.queue(film.uri);
+          let pdata = await epona.queue(uri);
           if (pdata.value) {
             vids.push(match[1]);
             plays.push(pdata.value);
@@ -55,9 +87,9 @@ const crawlYouku = async (films) => {
         console.error(`视频链接错误，未获取到 vid。`);
       }
       return {
-          vids,
-          plays
-        }
+        vids,
+        plays
+      }
     })
     let data = await Promise.all(promises);
     return data[0];

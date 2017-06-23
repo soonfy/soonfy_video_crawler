@@ -5,6 +5,30 @@ const reg_vid = /www\.let?v?\.com\/\w+\/([\w\d]+)\.html/;
 
 /**
  *
+ *  专辑页提取 vid, cid
+ *
+ */
+epona
+  .on(['tv.sohu.com/s'], {
+    vid: {
+      sels: [/var\s*playlistId\s*\=\s*\"*(\d+)/],
+
+      filters: (match) => match[1] - 0 + ''
+    },
+  })
+  .type('html')
+  .then((data, resp) => {
+    // console.log(data);
+    // 专辑页 都走综艺
+    data.cid = 7;
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
+/**
+ *
  *  播放页提取 vid, cid
  *
  */
