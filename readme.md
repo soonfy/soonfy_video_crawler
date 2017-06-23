@@ -34,5 +34,7 @@
 ## check plays
   ```
   1. 当前目录下新建 logs 文件夹
+  2. 执行如下脚本
+  tsc
   node main/scripts/check_play.js
   ```
