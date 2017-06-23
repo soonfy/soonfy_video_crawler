@@ -40,6 +40,7 @@ const FilmPlistSchema = new Schema({
 
 // index
 FilmPlistSchema.index({ film_id: 1, site: 1, status: 1 });
+FilmPlistSchema.index({ crawled_status: 1, crawled_at: 1 });
 
 const FilmPlist = mongoose.model('FILMPLIST', FilmPlistSchema, 'film_plists');
 

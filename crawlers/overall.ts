@@ -367,11 +367,50 @@ const main = async (film, action = 0) => {
   }
 }
 
+/**
+ *
+ *  search vids, plays
+ *
+ */
+const search = async (days = 30) => {
+  try {
+    let plays = [],
+      date = moment().format('YYYY-MM-DD'),
+      temp = moment().format('YYYY-MM-DD'),
+      start = moment().startOf('day');
+    let index = 0;
+    let films = await FilmPlist.count({ crawled_status: 0, crawled_at: { $gte: start } });
+    let vids = await FilmPlistEpisode.count({});
+    // console.log(films);
+    // console.log(vids);
+    while (index < days) {
+      ++index;
+      temp = new Date(temp);
+      let cal = moment(temp).format('YYYY-MM-DD');
+      // console.log(temp);
+      let eplays = await FilmPlistEpisodePlay.count({ date: temp });
+      let cplays = await CFilmPlistPlayCount.count({ date: temp });
+      // console.log(eplays);
+      // console.log(cplays);
+      plays.push([cal, cplays, eplays]);
+      temp = temp.valueOf() - OFFSET;
+    }
+    return {
+      date,
+      films,
+      vids,
+      plays
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export {
   crawl,
   store,
   count,
   fit,
-  main
+  main,
+  search
 }
-

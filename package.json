@@ -22,6 +22,7 @@
   "homepage": "https://github.com/soonfy/soonfy_video_crawler#readme",
   "dependencies": {
     "eponajs": "file:../thracia/lib/eponajs",
+    "filer_sf": "^1.0.2",
     "korok": "file:../thracia/lib/korok",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
