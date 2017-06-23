@@ -155,7 +155,7 @@ const store = async (film_play, action = 0) => {
       let cal = moment().format('YYYY-MM-DD');
       let date = new Date(cal);
       let _vid = {
-        _id: `${detail._id}:${site}:${vid}`,
+        _id: `${detail._id}:${vid}`,
         film_plist_id: detail._id,
       };
       let _play = {

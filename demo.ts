@@ -70,8 +70,8 @@ const start = async () => {
           year: name.match(/\s+(\d+)/) ? name.match(/\s+(\d+)/)[1] : ''
         }
         console.log(_film);
-        // let cfilm = await Crawlers.main(_film);
-        let cfilm = await Crawlers.crawl(_film);
+        let cfilm = await Crawlers.main(_film);
+        // let cfilm = await Crawlers.crawl(_film);
         console.log(cfilm);
         // if (cfilm.cplay) {
         //   fs.appendFileSync('./logs/play.csv', [name, site, uri, cfilm.cplay].join('\t') + '\n', 'utf-8');
@@ -83,10 +83,10 @@ const start = async () => {
       }
     }
     console.log('all film over.');
-    // await start();
+    await start();
   } catch (error) {
     console.error(error);
-    // await start();
+    await start();
   }
 }
 
