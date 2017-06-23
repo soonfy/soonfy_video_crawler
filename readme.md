@@ -4,10 +4,10 @@
 在当前目录下新建 config.json 文件
   ```
   {
-  "db":{
-    "uris": [dburl]
+    "db":{
+      "uris": [dburl]
+    }
   }
-}
   ```
 
 ## video site
