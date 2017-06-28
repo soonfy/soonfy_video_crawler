@@ -29,7 +29,7 @@ const FilmPlistSchema = new Schema({
   },
   // crawl status
   crawled_status: {
-    // 0 - ready, 1 - crawling, 2 - error
+    // 0 - ready, 1 - crawling, -1 - error
     type: Number,
   },
   // crawl time

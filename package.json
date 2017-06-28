@@ -27,6 +27,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mongoose": "^4.10.6",
+    "monitor-node": "^1.0.11",
     "warpipe": "file:../thracia/lib/warpipe"
   },
   "devDependencies": {
