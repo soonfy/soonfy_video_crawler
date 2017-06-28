@@ -83,10 +83,10 @@ const start = async () => {
       }
     }
     console.log('all film over.');
-    await start();
+    // await start();
   } catch (error) {
     console.error(error);
-    await start();
+    // await start();
   }
 }
 

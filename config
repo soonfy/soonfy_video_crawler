@@ -1,0 +1,5 @@
+{
+  "db":{
+    "uris": ["mongodb://user:pass@host:port/db"]
+  }
+}

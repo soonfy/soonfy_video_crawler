@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const FilmPlistEpisodePlaySchema = new Schema({
   // film episode play _id
   _id: {
-    // film_plist_episode_id:YYYYMMDD
+    // film_plist_episode_id:YYYY-MM-DD
     type: String,
   },
   // film plist episode id

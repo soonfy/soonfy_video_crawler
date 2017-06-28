@@ -109,6 +109,77 @@ const crawl = async (films) => {
 
 /**
  *
+ *  count plays
+ *  输入 film plists _ids, start date, end date
+ *
+ */
+const count = async (film_ids, start_date, end_date = start_date) => {
+  try {
+    if (!Array.isArray(film_ids)) {
+      film_ids = [film_ids];
+    }
+    start_date = new Date(start_date);
+    end_date = new Date(end_date);
+    // console.log(start_date);
+    // console.log(end_date);
+    let resp = [];
+    let index = 0;
+    for (let film_id of film_ids) {
+      let temp_date = start_date;
+      index++;
+      while (temp_date <= end_date) {
+        console.log(`--> 汇总数据 ${film_id} ${moment(temp_date).format('YYYY-MM-DD')}`);
+        let vids = await FilmPlistEpisode.find({ film_plist_id: film_id });
+        // console.log(vids);
+        if (vids.length === 0) {
+          continue;
+        }
+        let _promises = vids.map(async (vid) => {
+          return await FilmPlistEpisodePlay.find({ film_plist_episode_id: vid, date: temp_date });
+        })
+        let temp = await Promise.all(_promises);
+        if (temp.length === 0) {
+          continue;
+        }
+        let plays = [];
+        temp.map(x => Array.prototype.push.apply(plays, x));
+
+        let value = plays.map(x => x.value).reduce((a, b) => a + b);
+        // console.log(value);
+        let cal = moment(temp_date).format('YYYY-MM-DD');
+        let date = new Date(cal);
+        let _id = `${film_ids[index - 1]}:${cal}`;
+        let _cplay = {
+          _id,
+          film_plist_id: film_ids[index - 1],
+          date,
+          value,
+          calculated_at: new Date()
+        }
+        let cplay = await CFilmPlistPlayCount.findByIdAndUpdate(_id, { $set: _cplay }, { upsert: true, new: true });
+        console.log(`--> 数据汇总成功 ${cplay._id} ${cplay.value}`);
+
+        cplay = null;
+        _cplay = null;
+        _id = null;
+        cal = null;
+        value = null;
+        temp = null;
+        _promises = null;
+        vids = null;
+
+        resp.push(cplay);
+        temp_date = new Date(temp_date - 0 + OFFSET);
+      }
+    }
+    console.log(`--> 总共汇总 ${resp.length} 条数据.`);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ *
  *  plays store and count
  *  输入 plays, action
  *  action: 0 - 人为后台, 更新updated_at 1 - 日常刷播放量, 不更新 updated_at
@@ -148,6 +219,13 @@ const store = async (film_play, action = 0) => {
       new: true
     });
 
+    // 确定是否需要汇总，以及需要汇总的日期间隔
+    let isCount = {
+      status: 0,
+      start: null,
+      end: null,
+    }
+
     // 更新 film plist episodes 和 film plist episode plays 表数据
     // 先删除原先 vids, 再更新一批
     await FilmPlistEpisode.remove({ film_plist_id: detail._id });
@@ -180,21 +258,36 @@ const store = async (film_play, action = 0) => {
       }).sort({
         date: -1
       }).limit(2);
+
       if (_plays.length >= 2) {
         let start = _plays[1].date;
-        let end = _plays.date;
+        let end = _plays[0].date;
         if (end - start > OFFSET) {
-          console.log(`--> 需要拟合，汇总数据 ${detail._id} ${start} ${end}`);
+          if (isCount.status === 0) {
+            isCount.status = 1;
+            isCount.start = start - 0 + OFFSET;
+            isCount.end = end - OFFSET;
+          } else {
+            if (isCount.start > start) {
+              isCount.start = start - 0 + OFFSET;
+            } else if (isCount.end < end) {
+              isCount.end = end - OFFSET;
+            }
+          }
+          console.log(`--> 需要拟合，汇总数据 ${_plays[1]._id} ${_plays[0]._id}`);
           // 拟合数据
           await fit(_plays);
-          // 汇总数据
-          await count(detail._id, start, end);
         }
       }
 
       return play;
     })
     let data = await Promise.all(promises);
+
+    if (isCount.status === 1) {
+      // 汇总数据
+          await count(detail._id, isCount.start, isCount.end);
+    }
 
     // 更新 c film plist playcounts 表数据
     let cal = moment().format('YYYY-MM-DD');
@@ -212,78 +305,6 @@ const store = async (film_play, action = 0) => {
 
     film_play.cplay = cplay.value;
     return film_play;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-/**
- *
- *  count plays
- *  输入 film plists _ids, start date, end date
- *
- */
-const count = async (film_ids, start_date, end_date = start_date) => {
-  try {
-    if (typeof film_ids === 'string') {
-      film_ids = [film_ids];
-    }
-    start_date = new Date(start_date);
-    end_date = new Date(end_date);
-    // console.log(start_date);
-    // console.log(end_date);
-    let resp = [];
-    let index = 0;
-    for (let film_id of film_ids) {
-      let temp_date = start_date;
-      index++;
-      while (temp_date <= end_date) {
-        console.log(`--> 汇总数据 ${film_id} ${temp_date}`);
-        let vids = await FilmPlistEpisode.find({ film_plist_id: film_id });
-        // console.log(vids);
-        if (vids.length === 0) {
-          continue;
-        }
-        let _promises = vids.map(async (vid) => {
-          return await FilmPlistEpisodePlay.find({ film_plist_episode_id: vid, date: start_date });
-        })
-        let temp = await Promise.all(_promises);
-        if (temp.length === 0) {
-          continue;
-        }
-        let plays = [];
-        temp.map(x => Array.prototype.push.apply(plays, x));
-        // console.log(plays);
-
-        let value = plays.map(x => x.value).reduce((a, b) => a + b);
-        // console.log(value);
-        let cal = moment(temp_date).format('YYYY-MM-DD');
-        let date = new Date(cal);
-        let _id = `${film_ids[index - 1]}:${cal}`;
-        let _cplay = {
-          _id,
-          film_plist_id: film_ids[index - 1],
-          date,
-          value,
-          calculated_at: new Date()
-        }
-        let cplay = await CFilmPlistPlayCount.findByIdAndUpdate(_id, { $set: _cplay }, { upsert: true, new: true });
-        console.log(`--> 数据汇总成功 ${film_id} ${temp_date} ${cplay.value}`);
-
-        cplay = null;
-        _cplay = null;
-        _id = null;
-        cal = null;
-        value = null;
-        temp = null;
-        _promises = null;
-        vids = null;
-
-        resp.push(cplay);
-        temp_date = new Date(temp_date - 0 + OFFSET);
-      }
-    }
-    console.log(`--> 总共汇总 ${resp.length} 条数据.`);
   } catch (error) {
     console.error(error);
   }
@@ -327,7 +348,7 @@ const fit = async (plays) => {
       console.log(`--> 第 ${index} 次拟合成功`, resp._id, resp.value);
       index++;
     }
-    console.log(`--> 数据全部拟合成功 ${film_plist_episode_id} ${start} ${end}`);
+    console.log(`--> 数据全部拟合成功 ${plays[1]._id} ${plays[0]._id}`);
   } catch (error) {
     console.error(error);
   }
@@ -379,7 +400,7 @@ const search = async (days = 30) => {
       temp = moment().format('YYYY-MM-DD'),
       start = moment().startOf('day');
     let index = 0;
-    let films = await FilmPlist.count({ crawled_status: 0, crawled_at: { $gte: start } });
+    let films = await FilmPlist.count({ crawled_status: 0, crawled_at: { $gte: new Date('2017-06-20') } });
     let vids = await FilmPlistEpisode.count({});
     // console.log(films);
     // console.log(vids);
@@ -406,11 +427,48 @@ const search = async (days = 30) => {
   }
 }
 
+/**
+ *
+ *  export small error plays
+ *
+ */
+const export_play = async (days = 30) => {
+  try {
+    let plays = [],
+      date = moment().format('YYYY-MM-DD');
+    plays.push(['日期', '剧目film plist id', '播放量']);
+    let film_ids = await FilmPlist.find();
+    console.log(film_ids.length);
+    let promises = film_ids.map(async (film) => {
+      let error_status = 0;
+      let _plays = await CFilmPlistPlayCount.find({film_plist_id: film._id}).sort({date: 1});
+      if (_plays.length > 1) {
+        _plays.map((_play, index) => {
+          if (index > 0 && (_play.value - _plays[index - 1].value < 0)) {
+            error_status = 1;
+          }
+        })
+      }
+      if (error_status === 1) {
+        _plays.map(_play => plays.push([moment(_play.date).format('YYYY-MM-DD'), _play.film_plist_id, _play.value]))
+      }
+    })
+    await Promise.all(promises);
+    return {
+      date,
+      plays
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export {
   crawl,
   store,
   count,
   fit,
   main,
-  search
+  search,
+  export_play
 }
