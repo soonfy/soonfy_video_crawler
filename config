@@ -1,5 +1,6 @@
 {
   "db":{
-    "uris": ["mongodb://user:pass@host:port/db"]
+    "uris": ["mongodb://user:pass@host:port/db"],
+    "monitor": "mongodb://user:pass@host:port/db"
   }
 }

@@ -1,4 +1,4 @@
-import { crawl, store, count, fit, main, search, export_play } from './crawlers/overall';
+import { crawl, store, count, fit, main, search, export_play, export_film } from './crawlers/overall';
 
 export {
   crawl,
@@ -7,5 +7,6 @@ export {
   fit,
   main,
   search,
-  export_play
+  export_play,
+  export_film
 }

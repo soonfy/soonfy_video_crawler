@@ -462,6 +462,32 @@ const export_play = async (days = 30) => {
   }
 }
 
+/**
+ *
+ *  export error films
+ *
+ */
+const export_film = async (date) => {
+  try {
+    date = moment(date).format('YYYY-MM-DD');
+    let films = [],
+      start = moment(date).startOf('day');;
+    films.push(['最近更新日期', '剧目film plist id', '状态(0正常, 1可能异常)']);
+    let film_ids = await FilmPlist.find({crawled_at: {$lt: start}});
+    console.log(film_ids.length);
+    film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
+    film_ids = await FilmPlist.find({ crawled_status: 1});
+    console.log(film_ids.length);
+    film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
+    return {
+      date,
+      films
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export {
   crawl,
   store,
@@ -469,5 +495,6 @@ export {
   fit,
   main,
   search,
-  export_play
+  export_play,
+  export_film
 }

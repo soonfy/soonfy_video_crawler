@@ -83,6 +83,7 @@ const start = async () => {
       }
     }
     console.log('all film over.');
+    console.log(new Date());
     // await start();
   } catch (error) {
     console.error(error);
