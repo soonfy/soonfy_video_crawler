@@ -19,15 +19,18 @@ const start = async () => {
     // fs.writeFileSync('./logs/error.csv', '', 'utf-8');
     // fs.writeFileSync('./logs/play.csv', '', 'utf-8');
     // fs.writeFileSync('./logs/nouri.csv', '', 'utf-8');
+    console.log(new Date());
     let films = await FilmDetail.find({ isDeleted: { $ne: true }, status: { $gte: 0 }, });
     console.log(films.length);
+    console.log(films[0]);
     let index = 0;
     for (let film of films) {
       console.log('index', ++index);
       let site = film.site,
         name = film.name,
         film_id = film.filmId,
-        show_type = film.showType;
+        show_type = film.showType,
+        year = film.year;
       console.log(site);
       console.log(name);
       let uri;
@@ -67,7 +70,7 @@ const start = async () => {
           uri,
           site,
           show_type,
-          year: name.match(/\s+(\d+)/) ? name.match(/\s+(\d+)/)[1] : ''
+          year
         }
         console.log(_film);
         let cfilm = await Crawlers.main(_film);
@@ -84,10 +87,10 @@ const start = async () => {
     }
     console.log('all film over.');
     console.log(new Date());
-    // await start();
+    await start();
   } catch (error) {
     console.error(error);
-    // await start();
+    await start();
   }
 }
 
