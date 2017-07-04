@@ -285,7 +285,7 @@ const store = async (film_play, action = 0) => {
 
     if (isCount.status === 1) {
       // 汇总数据
-          await count(detail._id, isCount.start, isCount.end);
+      await count(detail._id, isCount.start, isCount.end);
     }
 
     // 更新 c film plist playcounts 表数据
@@ -440,7 +440,7 @@ const export_play = async (days = 30) => {
     console.log(film_ids.length);
     let promises = film_ids.map(async (film) => {
       let error_status = 0;
-      let _plays = await CFilmPlistPlayCount.find({film_plist_id: film._id}).sort({date: 1});
+      let _plays = await CFilmPlistPlayCount.find({ film_plist_id: film._id }).sort({ date: 1 });
       if (_plays.length > 1) {
         _plays.map((_play, index) => {
           if (index > 0 && (_play.value - _plays[index - 1].value < 0)) {
@@ -473,10 +473,10 @@ const export_film = async (date) => {
     let films = [],
       start = moment(date).startOf('day');;
     films.push(['最近更新日期', '剧目film plist id', '状态(0正常, 1可能异常)']);
-    let film_ids = await FilmPlist.find({crawled_at: {$lt: start}});
+    let film_ids = await FilmPlist.find({ crawled_at: { $lt: start } });
     console.log(film_ids.length);
     film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
-    film_ids = await FilmPlist.find({ crawled_status: 1});
+    film_ids = await FilmPlist.find({ crawled_status: 1 });
     console.log(film_ids.length);
     film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
     return {
