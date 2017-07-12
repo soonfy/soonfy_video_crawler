@@ -23,6 +23,13 @@ const CFilmPlistPlayCountSchema = new Schema({
   calculated_at: {
     type: Date,
   },
+  calculated_from: {
+    // 0 - old db
+    type: Number,
+  },
+  calculated_from_id: {
+    type: String,
+  },
 })
 
 CFilmPlistPlayCountSchema.index({ film_plist_id: 1, date: 1 });

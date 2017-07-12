@@ -5,3 +5,4 @@
 /logs/
 /temp/
 /config.json
+/scripts/migrate_play.ts

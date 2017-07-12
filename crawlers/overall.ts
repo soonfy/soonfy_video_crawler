@@ -204,6 +204,7 @@ const store = async (film_play, action = 0) => {
       film_id,
       site,
       uri,
+      status: 0,
       crawled_at: new Date(),
       crawled_status: 0
     };
