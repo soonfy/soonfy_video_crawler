@@ -29,7 +29,7 @@ try {
     process.exit();
   }
 }
-console.log(Config);
+// console.log(Config);
 const connection = mongoose.createConnection(Config && Config.db && Config.db.monitor);
 
 const sleep = async (ss) => {

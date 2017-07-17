@@ -460,6 +460,7 @@ const export_play = async (days = 30) => {
     }
   } catch (error) {
     console.error(error);
+    return await export_play(days);
   }
 }
 
@@ -486,6 +487,7 @@ const export_film = async (date) => {
     }
   } catch (error) {
     console.error(error);
+    return await export_film(date);
   }
 }
 

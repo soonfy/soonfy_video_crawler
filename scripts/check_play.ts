@@ -10,7 +10,7 @@ import * as filer from 'filer_sf';
 import * as path from 'path';
 import * as moment from 'moment';
 
-let start = async (file = '', days = 30) => {
+let start = async (days = 30, file = '') => {
   try {
     if (!file) {
       file = `../../logs/log-${moment().format('YYYYMMDD')}.xlsx`;
@@ -32,4 +32,4 @@ let start = async (file = '', days = 30) => {
   }
 }
 
-start();
+start(200);

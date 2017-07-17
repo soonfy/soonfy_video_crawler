@@ -10,7 +10,7 @@ const epona = Epona.new({ concurrent: 10 });
 epona
   .on(['iqiyi.com/a_'], {
     vid: ['#widget-playcount::data-playcount-albumid',
-    '.album-fun-fav::data-subscribe-albumid'],
+      '.album-fun-fav::data-subscribe-albumid'],
     cid: {
       sels: /cid\s*:\s*(\d+)\,/,
       filters: (match) => match[1] - 0
@@ -44,6 +44,7 @@ epona
  */
 epona
   .on(['iqiyi.com/v_', 'iqiyi.com/dianshiju', 'iqiyi.com/zongyi', 'vip.iqiyi.com', 'iqiyi.com/dianying', 'iqiyi.com/dongman'], {
+    // root: ':: html()',
     vid: ['#videoShopGuideWrap::data-shop-albumid',
       '#widget-qiyu-zebra::data-qiyu-albumid',
       '#playerAreaScore::data-score-tvid',
@@ -53,11 +54,30 @@ epona
     cid: {
       sels: /cid\s*:\s*(\d+)\,/,
       filters: (match) => match[1] - 0
+    },
+    metas: {
+      sels: ['meta *'],
+      nodes: {
+        equiv: ['::http-equiv'],
+        content: ['::content']
+      }
     }
   })
   .type('xml')
-  .then((data, resp) => {
+  .then(async (data, resp) => {
     // console.log(data);
+    if (!data.vid && resp.url.includes('vip.iqiyi.com')) {
+      let uri;
+      data.metas.map(meta => {
+        if (meta.equiv === 'refresh') {
+          uri = meta.content.match(/(http.+html)/)[1]
+        }
+      })
+      if (uri) {
+        data = await epona.queue(uri);
+        return data;
+      }
+    }
     return data;
   })
   .catch((error) => {
