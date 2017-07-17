@@ -75,9 +75,11 @@ epona
       })
       if (uri) {
         data = await epona.queue(uri);
+        delete data.metas;
         return data;
       }
     }
+    delete data.metas;
     return data;
   })
   .catch((error) => {

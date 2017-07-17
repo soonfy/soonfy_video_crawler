@@ -3,8 +3,8 @@ import * as Crawlers from './index';
 const start = async () => {
   try {
     console.time('film test');
-    let uri = 'http://vip.iqiyi.com/20110731/3ed4e4c1009f945e.html',
-      site = 'iqiyi',
+    let uri = 'https://v.qq.com/x/cover/7rf2u4ypyd15iiy/l0023u81vqw.html',
+      site = 'qq',
       show_type = -1,
       year = 2017;
     let _film = {

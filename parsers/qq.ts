@@ -35,16 +35,16 @@ epona
 epona
   .on(['cover'], {
     vid: {
-      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/],
-      filters: (match) => match[1]
+      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/, /id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/],
+      filters: (match) => match && match[1]
     },
     id: {
       sels: [/id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/],
-      filters: (match) => match[1]
+      filters: (match) => match && match[1]
     },
     cid: {
       sels: [/var\s*VIDEO\_INFO\s*\=\s*\{[\w\W]+?type\"*\s*\:\s*\"*(\d+)/, /var\s*COVER\_INFO\s*\=\s*\{[\w\W]+?typeid\"*\s*\:\s*\"*(\d+)/,],
-      filters: (match) => match[1] - 0
+      filters: (match) => match && match[1] - 0
     }
   })
   .type('xml')
