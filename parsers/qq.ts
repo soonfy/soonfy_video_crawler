@@ -35,11 +35,11 @@ epona
 epona
   .on(['cover'], {
     vid: {
-      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/, /id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/],
+      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/, /id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/, /\"id\"\:\"([\w\d]+)\"\,/],
       filters: (match) => match && match[1]
     },
     id: {
-      sels: [/id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/],
+      sels: [/id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/, /\"id\"\:\"([\w\d]+)\"\,/],
       filters: (match) => match && match[1]
     },
     cid: {
