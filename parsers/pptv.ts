@@ -19,7 +19,7 @@ const format_play = (value) => {
  *
  */
 epona
-  .on(['pptv.com/show/'], {
+  .on(['show/{id}.html'], {
     luri: {
       sels: ['.btn_more::href']
     }
@@ -85,8 +85,8 @@ epona
  *
  */
 epona
-  .on(['pptv.com/show/videoList'], {
-    // root: ':: html()',
+  .on(['apis.web.pptv.com/show/videoList?pid={pid}'], {
+    root: ':: html()',
     total: 'data ::total',
     value: {
       sels: 'data ::pv',

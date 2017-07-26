@@ -98,6 +98,7 @@ epona
   .beforeParse(body => body.match(/var\s*tvInfoJs\=([\w\W]*)/)[1])
   .type('xml')
   .then((data) => {
+    data.value = data.value - 0
     // console.log(data);
     return data;
   })

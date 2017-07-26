@@ -15,6 +15,7 @@ const start = async () => {
         site = 'qq';
         break;
       case uri.includes('le.com'):
+      case uri.includes('letv.com'):
         site = 'letv';
         break;
       case uri.includes('sohu.com'):
@@ -38,8 +39,8 @@ const start = async () => {
     let _film = {
       uri,
       site,
-      show_type,
-      year
+      show_type: -1,
+      year: 2017
     }
     console.log(_film);
     let cfilm = await Crawlers.crawl(_film);

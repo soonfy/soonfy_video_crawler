@@ -19,6 +19,7 @@ epona
   })
   .type('xml')
   .then((data) => {
+    data.value = data.value - 0
     // console.log(data);
     return data;
   })

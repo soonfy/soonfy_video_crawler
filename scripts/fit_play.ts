@@ -37,7 +37,7 @@ const start = async () => {
       //   continue;
       // }
       console.log(film);
-      let counts = await CFilmPlistPlayCount.find({ film_plist_id: film._id, date: { $lte: '2017-07-03' } }).sort({ date: 1 });
+      let counts = await CFilmPlistPlayCount.find({ film_plist_id: film._id }).sort({ date: 1 });
       for (let index = 0, len = counts.length; index < len - 1; index++) {
         if (counts[index + 1].date - counts[index].date > OFFSET) {
           let old_play = counts[index], new_play = counts[index + 1];

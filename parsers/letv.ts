@@ -45,10 +45,12 @@ epona
  */
 epona
   .on(['v.stat.letv.com'], {
+    // root: ':: html()',
     value: ['plist_play_count | numbers', 'media_play_count | numbers'],
   })
   .type('xml')
   .then((data) => {
+    data.value = data.value - 0
     // console.log(data);
     return data;
   })
@@ -90,7 +92,7 @@ const crawlLetv = async (films) => {
         vdata.cid = 11;
         console.log(vdata);
       } else {
-        let vdata = await epona.queue(film.uri);
+        vdata = await epona.queue(film.uri);
         console.log(vdata);
         if (!vdata || !vdata.vid) {
           console.error(`视频链接错误，未获取到 vid。`);

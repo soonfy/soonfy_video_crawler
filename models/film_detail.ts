@@ -43,6 +43,9 @@ const FilmDetailSchema = new Schema({
   showType: {
     type: Number,
   },
+  year: {
+    type: Number,
+  },
   leInfos: {
     type: Object,
     default: {}

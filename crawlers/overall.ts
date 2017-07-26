@@ -190,7 +190,7 @@ const store = async (film_play, action = 0) => {
     let {film_id, site, uri, vids, plays} = film_play;
 
     vids = vids.filter(x => x);
-    plays = plays.filter(x => x);
+    plays = plays.filter(x => typeof x === 'number');
     if (vids.length !== plays.length || plays.length === 0) {
       console.error(`vids length != plays length or plays length == 0`);
       console.error(`vids length ${vids.length}`);
@@ -374,7 +374,7 @@ const main = async (film, action = 0) => {
       return film;
     }
     vids = vids.filter(x => x);
-    plays = plays.filter(x => x);
+    plays = plays.filter(x => typeof x === 'number');
     if (vids.length === plays.length && plays.length > 0) {
       let cfilm = await store(resp, action);
       return cfilm;

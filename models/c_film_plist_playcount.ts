@@ -28,6 +28,7 @@ const CFilmPlistPlayCountSchema = new Schema({
     type: Number,
   },
   calculated_from_id: {
+    // vs counts _id
     type: String,
   },
 })
