@@ -38,11 +38,6 @@ const start = async () => {
       let {filmId: film_id, name, site, showType: show_type, year} = film,
         uri = '';
       console.log(film_id, name, site, show_type, year);
-      let count = await FilmPlist.count({ film_id, site });
-      if (count) {
-        console.log(count);
-        continue;
-      }
       switch (site) {
         case 'iqiyi':
           uri = film.iqiyiInfos && film.iqiyiInfos.iqiyiuri;
@@ -71,21 +66,23 @@ const start = async () => {
           uri = 'site error';
           break;
       }
-      !uri && film.playUrls.length > 0 ? uri = film.playUrls[0].playUrl : '';
       console.log(uri);
       if (!uri || uri === 'site error') {
         continue;
+      } else {
+        let _film = await FilmPlist.findOneAndUpdate({ film_id, site }, { $set: { crawled_status: 0 } })
+        console.log(_film);
       }
-      let _film = {
-        film_id,
-        site,
-        uri,
-        show_type,
-        year
-      }
-      console.log(_film);
-      let cfilm = await Crawlers.main(_film);
-      console.log(cfilm);
+      // let _film = {
+      //   film_id,
+      //   site,
+      //   uri,
+      //   show_type,
+      //   year
+      // }
+      // console.log(_film);
+      // let cfilm = await Crawlers.main(_film);
+      // console.log(cfilm);
     }
     console.log(`all films migrate over.`);
     process.exit();

@@ -57,3 +57,10 @@
   node main/scripts/export_play.js
   ```
   
+## remark
+  1. import package  
+  ```
+  npm i ../thracia/lib/sorting-hat
+  npm i typhoeus
+  ```
+  

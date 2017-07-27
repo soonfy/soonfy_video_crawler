@@ -41,26 +41,32 @@ const sleep = async (ss) => {
 
 const main = async () => {
   try {
-    let delay = 1000 * 60 * 30;
+    let delay = 1000 * 60 * 10;
     let film = await FilmPlist.findOneAndUpdate({ crawled_status: 1, crawled_at: { $lt: Date.now() - delay } }, { $set: { crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });
     if (!film) {
       film = await FilmPlist.findOneAndUpdate({ crawled_status: 0 }, { $set: { crawled_status: 1, crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });
     }
     let detail = await Film.findById(film.film_id);
-    film = film.toObject();
-    film.show_type = detail.show_type;
-    film.year = detail.year;
-    console.log(film);
-    // 日常采集不更新 update, 传递第二个参数为 1.
-    let cfilm = await Crawlers.main(film, 1);
-    if (cfilm && cfilm.cplay) {
-      console.log(`采集成功。`);
-      await FilmPlist.findOneAndUpdate({ _id: film._id }, { $set: { crawled_status: 0, crawled_at: new Date() } });
+    if (!detail) {
+      console.error(film);
+      console.error(`films no find name.`);
+      await FilmPlist.findOneAndUpdate({ _id: film._id }, { $set: { crawled_status: -2 } });
     } else {
-      console.error(`采集失败。`);
-      // await FilmPlist.findOneAndUpdate({ _id: film._id }, { $set: { crawled_status: -1 } });
+      film = film.toObject();
+      film.show_type = detail.show_type;
+      film.year = detail.year;
+      console.log(film);
+      // 日常采集不更新 update, 传递第二个参数为 1.
+      let cfilm = await Crawlers.main(film, 1);
+      if (cfilm && cfilm.cplay) {
+        console.log(`采集成功。`);
+        await FilmPlist.findOneAndUpdate({ _id: film._id }, { $set: { crawled_status: 0, crawled_at: new Date() } });
+      } else {
+        console.error(`采集失败。`);
+        // await FilmPlist.findOneAndUpdate({ _id: film._id }, { $set: { crawled_status: -1 } });
+      }
+      cfilm = null;
     }
-    cfilm = null;
     film = null;
     detail = null;
     delay = null;
