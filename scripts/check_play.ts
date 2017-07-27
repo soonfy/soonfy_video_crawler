@@ -32,4 +32,4 @@ let start = async (days = 30, file = '') => {
   }
 }
 
-start(200);
+start();

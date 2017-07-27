@@ -4,8 +4,6 @@ const start = async () => {
   try {
     console.time('film test');
     let uri = process.argv[2] ? process.argv[2].trim() : 'http://www.mgtv.com/b/293193/4012652.html',
-      show_type = -1,
-      year = 2017,
       site;
     switch (true) {
       case uri.includes('iqiyi.com'):
@@ -50,7 +48,7 @@ const start = async () => {
   } catch (error) {
     console.error(error);
     // await start();
-    process.exit();
+    process.exit(1);
   }
 }
 

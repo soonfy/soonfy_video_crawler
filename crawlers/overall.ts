@@ -22,6 +22,7 @@ import { crawlAcfun } from '../parsers/acfun';
  *  数据库操作全在这个文件
  *
  */
+import { Film } from '../models/film';
 import { FilmPlist } from '../models/film_plist';
 import { FilmPlistEpisode } from '../models/film_plist_episode';
 import { FilmPlistEpisodePlay } from '../models/film_plist_episode_playcount';
@@ -400,7 +401,7 @@ const search = async (days = 30) => {
       temp = moment().format('YYYY-MM-DD'),
       start = moment().startOf('day');
     let index = 0;
-    let films = await FilmPlist.count({ crawled_status: 0, crawled_at: { $gte: new Date('2017-06-20') } });
+    let films = await FilmPlist.count({ crawled_status: { $gte: 0 }, crawled_at: { $gte: new Date('2017-06-20') } });
     let vids = await FilmPlistEpisode.count({});
     // console.log(films);
     // console.log(vids);
@@ -474,13 +475,21 @@ const export_film = async (date) => {
     date = moment(date).format('YYYY-MM-DD');
     let films = [],
       start = moment(date).startOf('day');;
-    films.push(['最近更新日期', '剧目film plist id', '状态(0正常, 1可能异常)']);
+    films.push(['最近更新日期', '剧目名称', '剧目film plist id', '状态(0正常, 1可能异常)', '链接']);
     let film_ids = await FilmPlist.find({ crawled_at: { $lt: start } });
     console.log(film_ids.length);
-    film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
+    // film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status, _film.uri]));
+    for (let _film of film_ids) {
+      let fn = await Film.findById(_film.film_id);
+      films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn.name, _film._id, _film.crawled_status, _film.uri]);
+    }
     film_ids = await FilmPlist.find({ crawled_status: 1 });
     console.log(film_ids.length);
-    film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status]));
+    // film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status, _film.uri]));
+    for (let _film of film_ids) {
+      let fn = await Film.findById(_film.film_id);
+      films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn.name, _film._id, _film.crawled_status, _film.uri]);
+    }
     return {
       date,
       films

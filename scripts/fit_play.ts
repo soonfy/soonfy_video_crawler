@@ -1,12 +1,17 @@
+/**
+ *
+ *  拟合从旧数据库迁移过来的数据
+ *
+ */
 import * as mongoose from 'mongoose';
 import * as moment from 'moment';
 
-// /**
-//  *
-//  *  配置文件
-//  *  数据库
-//  *
-//  */
+/**
+ *
+ *  配置文件
+ *  数据库
+ *
+ */
 let Config;
 try {
   Config = require('../../config.json');
