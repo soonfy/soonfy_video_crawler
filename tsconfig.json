@@ -26,7 +26,8 @@
     "./parsers/*.ts",
     "./models/*.ts",
     "./models/*.ts",
-    "./scripts/*.ts"
+    "./scripts/*.ts",
+    "./exporters/*.ts"
   ],
   "exclude": [
     // 排除编译文件

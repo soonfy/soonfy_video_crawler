@@ -6,3 +6,6 @@
 /temp/
 /config.json
 /scripts/migrate_play.ts
+
+/input/
+/output/

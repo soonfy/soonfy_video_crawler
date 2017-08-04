@@ -5,6 +5,10 @@ const start = async () => {
     console.time('film test');
     let uri = process.argv[2] ? process.argv[2].trim() : 'http://www.mgtv.com/b/293193/4012652.html',
       site;
+    
+    let show_type = process.argv[3] ? process.argv[3].trim() - 0 : -1,
+      year = process.argv[4] ? process.argv[4].trim() - 0 : 2016;
+    
     switch (true) {
       case uri.includes('iqiyi.com'):
         site = 'iqiyi';
@@ -37,12 +41,14 @@ const start = async () => {
     let _film = {
       uri,
       site,
-      show_type: -1,
-      year: 2017
+      show_type,
+      year
     }
     console.log(_film);
     let cfilm = await Crawlers.crawl(_film);
     console.log(cfilm);
+    console.log('播放量 -->');
+    console.log(cfilm.plays.reduce((a, b) => a + b, 0));
     console.timeEnd('film test');
     process.exit();
   } catch (error) {
