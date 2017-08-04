@@ -96,7 +96,6 @@ const start = async () => {
     console.log(`导出所有剧目指定日期总播放量和播放增量`);
     console.log(`==============`);
     let argv = process.argv[2];
-    argv = 'all';
     if (argv) {
       argv = argv.trim();
     } else {
@@ -115,10 +114,15 @@ const start = async () => {
     lines.shift();
     let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量']];
     for (let line of lines) {
-      let films = await Film.find({ status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
+      let films, category = line[0] - 0;
+      if (category === -1) {
+        films = await Film.find({ status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
+      } else {
+        films = await Film.find({ category: category, status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
+      }
       console.log(`总共 ${films.length} 条剧目。`);
-      let _start = line[0],
-        end = line[1].trim();
+      let _start = line[1],
+        end = line[2].trim();
       end = moment(new Date(end)).endOf('day');
       for (let film of films) {
         let cate = ensure_cate(film.category);
@@ -162,7 +166,8 @@ const start = async () => {
                 return { _sum, _offset };
               })
               let plays = await Promise.all(promises);
-              let _line = line.slice(0, 2);
+              let _line = line.slice(1, 3);
+              _line.unshift(film_id);
               _line.unshift(name);
               _line.unshift(cate);
               let sum = plays.map(x => x._sum).reduce((a, b) => a + b, 0);
@@ -202,7 +207,8 @@ const start = async () => {
           })
           let plays = await Promise.all(promises);
           let sum = plays.map(x => x._sum).reduce((a, b) => a + b, 0);
-          let _line = line.slice(0, 2);
+          let _line = line.slice(1, 3);
+          _line.unshift(film_id);
           _line.unshift(name);
           _line.unshift(cate);
           _line.push(sum);
