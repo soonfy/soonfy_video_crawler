@@ -82,11 +82,11 @@ const start = async () => {
     lines.shift();
     let data = [['剧目类型', '剧目名称', '剧目id', '日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量']];
     for (let line of lines) {
-      let cate = line[0].trim(),
-        name = line[1].trim(),
-        film_id = line[2].trim(),
-        start = line[3],
-        end = line[4].trim();
+      let cate = typeof line[0] === 'number' ? line[0] : line[0].trim(),
+        name = typeof line[1] === 'number' ? line[1] : line[1].trim(),
+        film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
+        start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
+        end = typeof line[4] === 'number' ? line[4] : line[4].trim();
       // process.exit();
       let film = await Film.findById(film_id);
       if (!film) {

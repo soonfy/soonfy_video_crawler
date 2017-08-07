@@ -29,64 +29,10 @@ console.log(Config);
 mongoose.connect(Config && Config.db && Config.db.uris);
 
 const sites = ['iqiyi', 'qq', 'letv', 'sohu', 'youku', 'mgtv'];
+const cates = ['体育', '电影', '电视剧', '综艺', '网络剧', '网络综艺', '民生新闻', '动画电影', '动画剧集', '纪录片', '自媒体', '网络大电影', '民生节目', '大型综艺晚会', '广告短片', '其它-电视台', '其它-网络节目', '其它-其它'];
 
 const ensure_cate = (num) => {
-  let cate = '';
-  switch (num) {
-    case 0:
-      cate = '体育';
-      break;
-    case 1:
-      cate = '电影';
-      break;
-    case 2:
-      cate = '电视剧';
-      break;
-    case 3:
-      cate = '综艺';
-      break;
-    case 4:
-      cate = '网络剧';
-      break;
-    case 5:
-      cate = '网络综艺';
-      break;
-    case 6:
-      cate = '民生新闻';
-      break;
-    case 7:
-      cate = '动画电影';
-      break;
-    case 8:
-      cate = '动画剧集';
-      break;
-    case 9:
-      cate = '纪录片';
-      break;
-    case 10:
-      cate = '自媒体';
-      break;
-    case 11:
-      cate = '网络大电影';
-      break;
-    case 12:
-      cate = '民生节目';
-      break;
-    case 13:
-      cate = '大型综艺晚会';
-      break;
-    case 14:
-      cate = '广告短片';
-    case 15:
-      cate = '其它-电视台';
-    case 16:
-      cate = '其它-网络节目';
-      break;
-    case 17:
-      cate = '其它-其它';
-    default:
-      break;
-  }
+  let cate = typeof num === 'number' ? cates[num] : cates.indexOf(num);
   return cate;
 }
 
@@ -114,15 +60,19 @@ const start = async () => {
     lines.shift();
     let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量']];
     for (let line of lines) {
-      let films, category = line[0] - 0;
-      if (category === -1) {
+      let films, cate = typeof line[0] === 'number' ? ensure_cate(line[0]) : line[0].trim(), cate_id = ensure_cate(cate);
+      if (cate === '全部类型' && cate_id === -1) {
         films = await Film.find({ status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
       } else {
-        films = await Film.find({ category: category, status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
+        films = await Film.find({ category: cate_id, status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, });
       }
-      console.log(`总共 ${films.length} 条剧目。`);
+      console.log(`类型 ${cate} 总共 ${films.length} 条剧目。`);
+      if (films.length === 0) {
+        console.log(`请确认视频类型。`);
+        console.log(cates);
+      }
       let _start = line[1],
-        end = line[2].trim();
+        end = line[2] && line[2].trim();
       end = moment(new Date(end)).endOf('day');
       for (let film of films) {
         let cate = ensure_cate(film.category);
@@ -221,7 +171,7 @@ const start = async () => {
       }
     }
     // console.log(data);
-    let file = path.join(__dirname, `../../output/${argv}-sum-result.xlsx`);
+    let file = path.join(__dirname, `../../output/${argv}-category-result.xlsx`);
     filer.write(file, data);
     console.log(`=================`);
     console.log(`file output ${file}`);

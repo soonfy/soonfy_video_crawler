@@ -56,6 +56,29 @@
   tsc
   node main/scripts/export_play.js
   ```
+
+## exporters
+
+### 根据剧目 id 导出一段时间的总量和增量
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-增量需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_sum\_play.js 20170806-增量需求
+  3. 输出文件在 output 文件夹下。例如 文件“20170806-增量需求-sum-result.xlsx”
+  ```
+
+### 根据剧目 id 导出一段时间的每天总量
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-分天需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_daily\_play.js 20170806-分天需求
+  3. 输出文件在 output 文件夹下。例如 文件“20170806-分天需求-daily-result.xlsx”
+  ```
+
+### 根据剧目类型导出一段时间的总量和增量
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-类型需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_cate\_play.js 20170806-类型需求
+  3. 输出文件在 output 文件夹下。例如 文件“20170806-类型需求-category-result.xlsx”
+  ```
   
 ## remark
   1. import package  
