@@ -42,6 +42,10 @@ epona
       sels: [/id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/, /\"id\"\:\"([\w\d]+)\"\,/],
       filters: (match) => match && match[1]
     },
+    bvid: {
+      sels: [/column_id\\":\s*\"?([\w\d]+)\"?\,/, /c\_column\_id\:\s*\"?([\w\d]+)\"?\,/, /\"column\_id\"\:\"([\w\d]+)\"\,/],
+      filters: (match) => match && match[1]
+    },
     cid: {
       sels: [/var\s*VIDEO\_INFO\s*\=\s*\{[\w\W]+?type\"*\s*\:\s*\"*(\d+)/, /var\s*COVER\_INFO\s*\=\s*\{[\w\W]+?typeid\"*\s*\:\s*\"*(\d+)/,],
       filters: (match) => match && match[1] - 0
@@ -154,6 +158,9 @@ const crawlQQ = async (films) => {
         // 生活
         case 60:
           // 母婴
+          if(vdata.bvid){
+            vdata.vid = vdata.bvid;
+          }
           uri = `http://s.video.qq.com/loadplaylist?type=6&plname=qq&otype=json&id=${vdata.vid}`;
           ldata = await epona.queue(uri);
           ldata.ids = [];

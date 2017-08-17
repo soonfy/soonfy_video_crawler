@@ -130,9 +130,12 @@ const start = async () => {
             dates.map((item, index) => {
               let _line = line.slice(0, 3);
               _line.push(item.date);
+              let _temp = [];
               plays.map(site => {
-                _line.push(site[index].value);
+                _temp.push(site[index].value);
               })
+              _temp.unshift(_temp.reduce((a, b) => a + b, 0));
+              _line = _line.concat(_temp);
               data.push(_line);
             })
             continue;
