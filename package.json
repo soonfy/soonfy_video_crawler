@@ -28,11 +28,14 @@
     "moment": "^2.18.1",
     "mongoose": "^4.10.6",
     "monitor-node": "^1.0.11",
+    "sorting-hat": "file:///home/oliver/work/thracia/lib/sorting-hat",
+    "typhoeus": "^1.2.5",
     "warpipe": "file:../thracia/lib/warpipe"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.66",
     "@types/moment": "^2.13.0",
-    "@types/mongoose": "^4.7.17"
+    "@types/mongoose": "^4.7.17",
+    "@types/node": "^8.0.22"
   }
 }
