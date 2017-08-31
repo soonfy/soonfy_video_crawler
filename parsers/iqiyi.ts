@@ -314,8 +314,10 @@ const crawlIqiyi = async (films) => {
             uri = `http://cache.video.iqiyi.com/jp/sdlst/${vdata.cid}/${vdata.vid}/`;
             ldata = await epona.queue(uri);
             // console.log(ldata);
-            if (!ldata.years && cid === 27) {
+            if (!ldata.years) {
+              // 部分只显示一个总播放量的剧目
               // 原创网络剧 --> 恋上播霸
+              // 纪录片 --> 大国外交
               uri = `http://cache.video.iqiyi.com/jp/avlist/${vdata.vid}/`;
               ldata = await epona.queue(uri);
               // console.log(ldata);
