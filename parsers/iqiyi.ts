@@ -267,6 +267,30 @@ const crawlIqiyi = async (films) => {
             // console.log(pdata);
             vids.push(vdata.vid);
             plays.push(pdata.value);
+          } else {
+            // 部分电视剧 --> 神剧亮了
+            let uris;
+            if (film.show_type === 1) {
+              uris = [`http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${film.year}/`];
+            } else {
+              uri = `http://cache.video.iqiyi.com/jp/sdlst/${vdata.cid}/${vdata.vid}/`;
+              ldata = await epona.queue(uri);
+              // console.log(ldata);
+              uris = ldata.years.map(year => `http://cache.video.qiyi.com/jp/sdvlst/${vdata.cid}/${vdata.vid}/${year}/`);
+            }
+            ldata = await epona.queue(uris);
+            // console.log(ldata);
+            ldata.map(_data => {
+              Array.prototype.push.apply(vids, _data.ids);
+            })
+            // console.log(vids);
+            uris = vids.map(vid => `http://mixer.video.iqiyi.com/jp/mixin/videos/${vid}/`);
+            // console.log(uris);
+            pdata = await epona.queue(uris);
+            // console.log(pdata);
+            pdata.map(_data => {
+              plays.push(_data.value);
+            })
           }
           break;
 

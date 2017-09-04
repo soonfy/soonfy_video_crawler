@@ -85,9 +85,7 @@ const crawler = async (uri) => {
 
 const start = async () => {
   try {
-    let uris = ['http://v.qq.com/u/videos/#cover_edit/pn80005010qepqx',
-      'http://v.qq.com/u/videos/#cover_edit/kzw000501s1psio',
-      'http://v.qq.com/u/videos/#cover_edit/2r4000501gui5ar'];
+    let uris = ['http://v.qq.com/u/videos/#cover_edit/g0b000801iq26ef'];
     for (let uri of uris) {
       await crawler(uri);
     }
