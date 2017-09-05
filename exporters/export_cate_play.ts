@@ -7,6 +7,7 @@ import * as filer from 'filer_sf';
 import { Film } from '../models/film';
 import { FilmPlist } from '../models/film_plist';
 import { CFilmPlistPlayCount } from '../models/c_film_plist_playcount';
+import TV from '../models/tv';
 
 
 /**
@@ -58,7 +59,7 @@ const start = async () => {
     console.log(`==============`);
     lines = lines['播放量'];
     lines.shift();
-    let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量']];
+    let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量', '上映年份', '开播日期', '收官日期', '电视台']];
     for (let line of lines) {
       let films, cate = typeof line[0] === 'number' ? ensure_cate(line[0]) : line[0].trim(), cate_id = ensure_cate(cate);
       if (cate === '全部类型' && cate_id === -1) {
@@ -75,6 +76,15 @@ const start = async () => {
         end = line[2] && line[2].trim();
       end = moment(new Date(end)).endOf('day');
       for (let film of films) {
+        let year = film.year || '没有上映年份数据',
+          tvs = film.tvs,
+          release_date = film.release_date ? moment(film.release_date).format('YYYY-MM-DD') : '没有开播日期',
+          ending_date = film.ending_date ? moment(film.ending_date).format('YYYY-MM-DD') : '没有收官日期';
+        if(tvs && tvs.length > 0){
+          tvs = await Promise.all(tvs.map(async (x) => (await TV.findOne({_id: x})).name));
+        }else{
+          tvs = ['没有电视台数据'];
+        }
         let cate = ensure_cate(film.category);
         if (!cate) {
           console.error(`================`);
@@ -126,6 +136,7 @@ const start = async () => {
               let offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0);
               _line.push(offset);
               _line = _line.concat(plays.map(x => x._offset));
+              _line = _line.concat([year, release_date, ending_date, tvs.join(' / ')]);
               data.push(_line);
               continue;
             } else {
@@ -166,6 +177,7 @@ const start = async () => {
           let offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0);
           _line.push(offset);
           _line = _line.concat(plays.map(x => x._offset));
+          _line = _line.concat([year, release_date, ending_date, tvs.join(' / ')]);
           data.push(_line);
         }
       }
