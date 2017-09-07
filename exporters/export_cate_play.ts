@@ -136,7 +136,7 @@ const start = async () => {
               let offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0);
               _line.push(offset);
               _line = _line.concat(plays.map(x => x._offset));
-              _line = _line.concat([year, release_date, ending_date, tvs.join(' / ')]);
+              _line = _line.concat([year, release_date, ending_date, tvs.join(' ; ')]);
               data.push(_line);
               continue;
             } else {

@@ -28,10 +28,10 @@ const FilmSchema = new Schema({
   // 
   is_deleted: Boolean,
   status: Number,
-  // 类别
-  category: Number,
   // 关键词
   keywords: Array,
+  // 百度指数关键词
+  baidu_index_keyword: String,
   // 上映时间
   release_date: Date,
   // 收官日期
