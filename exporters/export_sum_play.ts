@@ -29,6 +29,7 @@ console.log(Config);
 mongoose.connect(Config && Config.db && Config.db.uris);
 
 const sites = ['iqiyi', 'qq', 'letv', 'sohu', 'youku', 'mgtv'];
+const csites = ['爱奇艺', '腾讯', '乐视', '搜狐', '优酷', '芒果'];
 
 const start = async () => {
   try {
@@ -52,7 +53,7 @@ const start = async () => {
     console.log(`==============`);
     lines = lines['播放量'];
     lines.shift();
-    let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量']];
+    let data = [['剧目类型', '剧目名称', '剧目id', '开始日期', '结束日期', '播出平台1', '播出平台2', '播出平台3', '播出平台4', '播出平台5', '播出平台6', '总播放量', '爱奇艺总播放量', '腾讯总播放量', '乐视总播放量', '搜狐总播放量', '优酷总播放量', '芒果总播放量', '期间播放增量', '爱奇艺期间播放增量', '腾讯期间播放增量', '乐视期间播放增量', '搜狐期间播放增量', '优酷期间播放增量', '芒果期间播放增量']];
     for (let line of lines) {
       let cate = typeof line[0] === 'number' ? line[0] : line[0].trim(),
         name = typeof line[1] === 'number' ? line[1] : line[1].trim(),
@@ -84,8 +85,8 @@ const start = async () => {
                 if (!fp) {
                   // _sum += 0;
                 } else {
-                  let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end } }, '', { sort: { date: -1 } });
-                  let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: start } }, '', { sort: { date: -1 } });
+                  let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: -1 } });
+                  let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: 1 } });
                   last = last ? last : { value: 0 };
                   last_l = last_l ? last_l : { value: 0 };
                   if (last) {
@@ -101,6 +102,9 @@ const start = async () => {
             let plays = await Promise.all(promises);
             let sum = plays.map(x => x._sum).reduce((a, b) => a + b, 0);
             let _line = line.slice(0, 5);
+            let plats = plays.map((x, i) => x._sum ? csites[i] : '');
+            _line = _line.concat(plats);
+            _line.push(sum);
             _line.push(sum);
             _line = _line.concat(plays.map(x => x._sum));
             let offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0);
@@ -124,8 +128,8 @@ const start = async () => {
           if (!fp) {
             // return 0;
           } else {
-            let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end } }, '', { sort: { date: -1 } });
-            let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: start } }, '', { sort: { date: -1 } });
+            let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: -1 } });
+            let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: 1 } });
             last = last ? last : { value: 0 };
             last_l = last_l ? last_l : { value: 0 };
             if (last) {
@@ -138,6 +142,8 @@ const start = async () => {
         let plays = await Promise.all(promises);
         let sum = plays.map(x => x._sum).reduce((a, b) => a + b, 0);
         let _line = line.slice(0, 5);
+        let plats = plays.map((x, i) => x._sum ? csites[i] : '');
+        _line = _line.concat(plats);
         _line.push(sum);
         _line = _line.concat(plays.map(x => x._sum));
         let offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0);

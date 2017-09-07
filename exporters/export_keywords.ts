@@ -40,7 +40,7 @@ const ensure_cate = (num) => {
 const start = async () => {
   try {
     console.log(`==============`);
-    console.log(`输入类型类型 id 导出对应类型最近3个月添加剧目的关键词，不输入则导出所有类型最近3个月添加剧目的关键词`);
+    console.log(`输入剧目类型 id 导出对应类型最近3个月添加剧目的关键词，不输入则导出所有类型最近3个月添加剧目的关键词`);
     let argv = process.argv[2];
     console.log(`==============`);
     if (argv) {

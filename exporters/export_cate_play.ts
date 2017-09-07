@@ -111,8 +111,8 @@ const start = async () => {
                   if (!fp) {
                     // _sum += 0;
                   } else {
-                    let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end } }, '', { sort: { date: -1 } });
-                    let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: start } }, '', { sort: { date: -1 } });
+                    let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: -1 } });
+                    let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: 1 } });
                     last = last ? last : { value: 0 };
                     last_l = last_l ? last_l : { value: 0 };
                     if (last) {
@@ -155,8 +155,8 @@ const start = async () => {
             if (!fp) {
               // return 0;
             } else {
-              let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end } }, '', { sort: { date: -1 } });
-              let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: start } }, '', { sort: { date: -1 } });
+              let last = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: -1 } });
+              let last_l = await CFilmPlistPlayCount.findOne({ film_plist_id: fp._id, date: { $lte: end, $gte: start } }, '', { sort: { date: 1 } });
               last = last ? last : { value: 0 };
               last_l = last_l ? last_l : { value: 0 };
               if (last) {
