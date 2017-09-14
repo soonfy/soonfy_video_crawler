@@ -14,6 +14,10 @@ const FilmPlistSchema = new Schema({
   uri: {
     type: String,
   },
+  // film label
+  label: {
+    type: String,
+  },
   // film uri status
   status: {
     // 0 - right, crawler using

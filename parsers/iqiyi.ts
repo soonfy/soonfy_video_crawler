@@ -319,6 +319,8 @@ const crawlIqiyi = async (films) => {
         // 财经
         case 25:
         // 资讯
+        case 26:
+        // 汽车
         case 27:
         // 原创
         case 28:

@@ -65,7 +65,7 @@ const crawl = async (films) => {
     let promises = films.map(async (film) => {
       // console.log(film);
       let data;
-      let {site} = film;
+      let { site } = film;
       switch (site) {
         case 'iqiyi':
           data = await crawlIqiyi([film]);
@@ -188,7 +188,7 @@ const count = async (film_ids, start_date, end_date = start_date) => {
  */
 const store = async (film_play, action = 0) => {
   try {
-    let {film_id, site, uri, vids, plays} = film_play;
+    let { film_id, site, uri, vids, plays } = film_play;
 
     vids = vids.filter(x => x);
     plays = plays.filter(x => typeof x === 'number');
@@ -369,7 +369,7 @@ const main = async (film, action = 0) => {
     if (!resp) {
       return film;
     }
-    let {vids, plays} = resp;
+    let { vids, plays } = resp;
     if (!resp.vids || !resp.plays) {
       console.log(resp);
       return film;
@@ -475,20 +475,20 @@ const export_film = async (date) => {
     date = moment(date).format('YYYY-MM-DD');
     let films = [],
       start = moment(date).startOf('day');;
-    films.push(['最近更新日期', '剧目名称', '剧目film plist id', '状态(0正常, 1可能异常)', '链接']);
-    let film_ids = await FilmPlist.find({ crawled_at: { $lt: start } });
+    films.push(['最近更新日期', '剧目 id', '剧目名称', '网站', '剧目 film plist id', '链接状态(0正常, 1可能异常)', '链接']);
+    let film_ids = await FilmPlist.find({ crawled_at: { $lt: start }, status: { $gte: 0 } });
     console.log(film_ids.length);
-    // film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status, _film.uri]));
     for (let _film of film_ids) {
-      let fn = await Film.findById(_film.film_id);
-      films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn.name, _film._id, _film.crawled_status, _film.uri]);
+      // let fn = await Film.findById(_film.film_id);
+      let fn = await Film.findOne({ _id: _film.film_id, status: { $gte: 0 }, isDeleted: { $ne: true } });
+      fn ? films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn._id, fn.name, _film.site, _film._id, _film.crawled_status, _film.uri]) : '';
     }
     film_ids = await FilmPlist.find({ crawled_status: 1 });
     console.log(film_ids.length);
-    // film_ids.map(_film => films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), _film._id, _film.crawled_status, _film.uri]));
     for (let _film of film_ids) {
-      let fn = await Film.findById(_film.film_id);
-      films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn.name, _film._id, _film.crawled_status, _film.uri]);
+      // let fn = await Film.findById(_film.film_id);
+      let fn = await Film.findOne({ _id: _film.film_id, status: { $gte: 0 }, isDeleted: { $ne: true } });
+      fn ? films.push([moment(_film.crawled_at).format('YYYY-MM-DD'), fn._id, fn.name, _film.site, _film._id, _film.crawled_status, _film.uri]) : '';
     }
     return {
       date,
