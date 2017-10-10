@@ -157,7 +157,7 @@ const start = async () => {
     console.log(`==============`);
     lines = lines['播放量'];
     lines.shift();
-    let data = [['剧目类型', '剧目名称', '剧目id', '日期', '总新增播放量', '爱奇艺新增总播放量', '腾讯新增总播放量', '乐视新增总播放量', '搜狐新增总播放量', '优酷新增总播放量', '芒果新增总播放量']];
+    let data = [['剧目类型', '剧目名称', '剧目id', '日期', '总新增播放量', '爱奇艺新增总播放量', '腾讯新增总播放量', '乐视新增总播放量', '搜狐新增总播放量', '优酷新增总播放量', '芒果新增总播放量', 'PPTV新增总播放量']];
     for (let line of lines) {
       let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
         start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
