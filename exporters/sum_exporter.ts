@@ -64,9 +64,12 @@ const summer = async (film_id, start, end) => {
         tvs = ['没有电视台数据'];
       }
 
+      let show_type;      
+
       let plays, sum, offset, plats, plat_count;
 
       if (film.show_type === 2) {
+        show_type = '分年';
         console.log(`${name} 分年剧目...`);
         let films = await Film.find({ from_id: film_id, is_deleted: { $ne: true } });
         if (films.length > 0) {
@@ -94,6 +97,7 @@ const summer = async (film_id, start, end) => {
           })
           plays = await Promise.all(promises);
         } else {
+          show_type = '分年，没有子剧目';
           console.error(`*****************`);
           console.error(`${name} 分年剧目却没有找到分年子剧目...`);
           console.error(`*****************`);
@@ -121,6 +125,7 @@ const summer = async (film_id, start, end) => {
           plays = await Promise.all(promises);
         }
       } else {
+        show_type = '不分年';
         console.log(`${name} 不分年剧目...`);
         let promises = sites.map(async (site) => {
           let _sum = 0,
@@ -148,7 +153,7 @@ const summer = async (film_id, start, end) => {
         plats = plays.map((x, i) => x._sum ? csites[i] : ''),
         plat_count = plats.filter(x => x).length;
 
-      result = [cate, name, film_id, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
+      result = [cate, name, film_id, show_type, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
       result = result.concat(plats);
       result.push(sum);
       result = result.concat(plays.map(x => x._sum));
