@@ -65,6 +65,7 @@ const summer = async (film_id, start, end) => {
       }
 
       let show_type;      
+      let episode = film.episode;      
 
       let plays, sum, offset, plats, plat_count;
 
@@ -72,6 +73,7 @@ const summer = async (film_id, start, end) => {
         show_type = '分年';
         console.log(`${name} 分年剧目...`);
         let films = await Film.find({ from_id: film_id, is_deleted: { $ne: true } });
+        console.log(`子剧目 - ${films.length} 个`);
         if (films.length > 0) {
           let promises = sites.map(async (site) => {
             let _sum = 0,
@@ -153,7 +155,7 @@ const summer = async (film_id, start, end) => {
         plats = plays.map((x, i) => x._sum ? csites[i] : ''),
         plat_count = plats.filter(x => x).length;
 
-      result = [cate, name, film_id, show_type, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
+      result = [cate, name, film_id, show_type, episode, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
       result = result.concat(plats);
       result.push(sum);
       result = result.concat(plays.map(x => x._sum));

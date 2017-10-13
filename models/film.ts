@@ -38,6 +38,8 @@ const FilmSchema = new Schema({
   ending_date: Date,
   // 电视台
   tvs: Array,
+  // 集数
+  episode: Number,
   // 分年剧目所属主剧目
   from_id: String,
   // 豆瓣类型
