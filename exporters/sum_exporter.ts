@@ -65,7 +65,7 @@ const summer = async (film_id, start, end) => {
       }
 
       let show_type;      
-      let episode = film.episode;      
+      let {episode, rank} = film;      
 
       let plays, sum, offset, plats, plat_count;
 
@@ -155,7 +155,7 @@ const summer = async (film_id, start, end) => {
         plats = plays.map((x, i) => x._sum ? csites[i] : ''),
         plat_count = plats.filter(x => x).length;
 
-      result = [cate, name, film_id, show_type, episode, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
+      result = [cate, name, film_id, rank, show_type, episode, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
       result = result.concat(plats);
       result.push(sum);
       result = result.concat(plays.map(x => x._sum));
