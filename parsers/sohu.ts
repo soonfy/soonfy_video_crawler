@@ -87,7 +87,7 @@ epona
       sels: ['plids > *::total', 'vids > *::total'],
     }
   })
-  .beforeParse(body => body.replace('plids', '"plids"').replace('vids', '"vids"'))
+  // .beforeParse(body => body.replace('plids', '"plids"').replace('vids', '"vids"'))
   .type('xml')
   .then((data) => {
     // console.log(data);
