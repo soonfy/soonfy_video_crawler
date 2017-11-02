@@ -134,7 +134,6 @@ import * as filer from 'filer_sf';
 
 
 import DailyExporter from './daily_exporter';
-import YearExporter from './year_exporter';
 
 const start = async () => {
   try {
@@ -161,24 +160,13 @@ const start = async () => {
     lines = lines['播放量'];
     lines.shift();
     let data = [['剧目类型', '剧目名称', '剧目id', '日期', '总新增播放量', '爱奇艺新增总播放量', '腾讯新增总播放量', '乐视新增总播放量', '搜狐新增总播放量', '优酷新增总播放量', '芒果新增总播放量', 'PPTV新增总播放量']];
-    if (year && year.trim() === 'year') {
-      console.log('分年直接导出。');
-      for (let line of lines) {
-        let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
-          start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
-          end = typeof line[4] === 'number' ? line[4] : line[4].trim();
-        let result = await YearExporter(film_id, start, end);
-        data = data.concat(result);
-      }
-    } else {
-      console.log('分年加和导出。');
-      for (let line of lines) {
-        let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
-          start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
-          end = typeof line[4] === 'number' ? line[4] : line[4].trim();
-        let result = await DailyExporter(film_id, start, end);
-        data = data.concat(result);
-      }
+
+    for (let line of lines) {
+      let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
+        start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
+        end = typeof line[4] === 'number' ? line[4] : line[4].trim();
+      let result = await DailyExporter(film_id, start, end);
+      data = data.concat(result);
     }
 
     let file = path.join(__dirname, `../../output/${argv}-daily-result.xlsx`);
