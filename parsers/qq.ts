@@ -182,11 +182,11 @@ const crawlQQ = async (films) => {
               ldata.ids = [vdata.vid]
             }
           }
-          vids = ldata.ids || [];
           if (!ldata.ids || ldata.ids.length === 0) {
             break;
           }
           ldata.ids = _.uniq(ldata.ids)
+          vids = ldata.ids || [];
           uris = ldata.ids.map(x => `http://data.video.qq.com/fcgi-bin/data?tid=70&appid=10001007&appkey=e075742beb866145&otype=json&idlist=${x}`);
           pdata = await epona.queue(uris);
           // console.log(pdata);
