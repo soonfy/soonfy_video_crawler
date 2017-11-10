@@ -7,7 +7,7 @@ const start = async () => {
       site;
     
     let show_type = process.argv[3] ? process.argv[3].trim() - 0 : -1,
-      year = process.argv[4] ? process.argv[4].trim() - 0 : 2016;
+      year = process.argv[4] ? process.argv[4].trim() - 0 : 2017;
     
     switch (true) {
       case uri.includes('iqiyi.com'):

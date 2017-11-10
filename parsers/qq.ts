@@ -158,12 +158,12 @@ const crawlQQ = async (films) => {
         // 生活
         case 60:
           // 母婴
-          if(vdata.bvid){
+          if (vdata.bvid) {
             vdata.vid = vdata.bvid;
           }
           uri = `http://s.video.qq.com/loadplaylist?type=6&plname=qq&otype=json&id=${vdata.vid}`;
           ldata = await epona.queue(uri);
-          ldata.ids = [];
+          // ldata.ids = [];
           // console.log(ldata);
           // console.log(ldata.ids.length);
           if (film.show_type === 1) {
@@ -171,10 +171,14 @@ const crawlQQ = async (films) => {
             let _ldata = await epona.queue(uri);
             ldata.ids = _ldata.ids;
           } else {
-            for (let year of ldata.years) {
-              uri = `http://s.video.qq.com/loadplaylist?type=4&plname=qq&otype=json&id=${vdata.vid}&year=${year}`;
-              let _ldata = await epona.queue(uri);
-              ldata.ids = ldata.ids.concat(_ldata.ids);
+            if (ldata.years) {
+              for (let year of ldata.years) {
+                uri = `http://s.video.qq.com/loadplaylist?type=4&plname=qq&otype=json&id=${vdata.vid}&year=${year}`;
+                let _ldata = await epona.queue(uri);
+                ldata.ids = ldata.ids.concat(_ldata.ids);
+              }
+            } else {
+              ldata.ids = [vdata.vid]
             }
           }
           vids = ldata.ids || [];
