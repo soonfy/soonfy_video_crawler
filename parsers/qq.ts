@@ -1,4 +1,5 @@
 import * as Epona from 'eponajs';
+import * as _ from 'lodash';
 
 const epona = Epona.new({ concurrent: 10 });
 
@@ -185,6 +186,7 @@ const crawlQQ = async (films) => {
           if (!ldata.ids || ldata.ids.length === 0) {
             break;
           }
+          ldata.ids = _.uniq(ldata.ids)
           uris = ldata.ids.map(x => `http://data.video.qq.com/fcgi-bin/data?tid=70&appid=10001007&appkey=e075742beb866145&otype=json&idlist=${x}`);
           pdata = await epona.queue(uris);
           // console.log(pdata);
