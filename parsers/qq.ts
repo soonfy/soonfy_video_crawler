@@ -130,6 +130,7 @@ const crawlQQ = async (films) => {
         case 6:
         // 游戏
         case 9:
+        case 23:
         // 纪录片
         case 26:
         // 旅游
