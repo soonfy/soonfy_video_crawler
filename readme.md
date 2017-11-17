@@ -82,9 +82,11 @@
   ```
   
 ## remark
-  1. import package  
+  1. import package      
+  在 korok 下 korok_factory.js 文件添加    
   ```
-  npm i ../thracia/lib/sorting-hat
-  npm i typhoeus
+  if(name == "tag()") {
+    return elem.name
+  }
   ```
   
