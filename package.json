@@ -28,7 +28,7 @@
     "moment": "^2.18.1",
     "mongoose": "^4.10.6",
     "monitor-node": "^1.0.11",
-    "sorting-hat": "file:///home/oliver/work/thracia/lib/sorting-hat",
+    "sorting-hat": "file:../thracia/lib/sorting-hat",
     "typhoeus": "^1.2.5",
     "warpipe": "file:../thracia/lib/warpipe"
   },
