@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/soonfy/soonfy_video_crawler#readme",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "eponajs": "file:../thracia/lib/eponajs",
     "filer_sf": "^1.0.3",
     "korok": "file:../thracia/lib/korok",
@@ -28,6 +29,8 @@
     "moment": "^2.18.1",
     "mongoose": "^4.10.6",
     "monitor-node": "^1.0.11",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "sorting-hat": "file:../thracia/lib/sorting-hat",
     "typhoeus": "^1.2.5",
     "warpipe": "file:../thracia/lib/warpipe"
