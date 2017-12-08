@@ -31,7 +31,6 @@ import { FilmPlist } from '../models/film_plist';
 const search_iqiyi = async (name) => {
   try {
     console.log(`start search iqiyi.`);
-    name = '那年花开'
     console.log(name);
     let temp = 0;
     let sr = '';
