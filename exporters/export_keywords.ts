@@ -77,7 +77,7 @@ const start = async () => {
       }
 
       if (actor_ids && actor_ids.length > 0) {
-        actor_ids = await Promise.all(actor_ids.map(async (x) => (await Actor.findOne({ _id: x })).cname));
+        actor_ids = await Promise.all(actor_ids.map(async (x) => (await Actor.findOne({ douban_id: x })).cname));
       } else {
         tvs = ['没有演员数据'];
       }
