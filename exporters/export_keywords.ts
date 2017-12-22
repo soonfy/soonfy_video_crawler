@@ -8,6 +8,7 @@ import { Film } from '../models/film';
 import { FilmPlist } from '../models/film_plist';
 import { CFilmPlistPlayCount } from '../models/c_film_plist_playcount';
 import TV from '../models/tv';
+import Actor from '../models/actor';
 
 
 /**
@@ -51,7 +52,7 @@ const start = async () => {
       console.log(`需要导出 所有 类别的关键词`);
     }
     console.log(`==============`);
-    let data = [['剧目类型', '剧目名称', '剧目id', '微博，微信，百度新闻关键词', '百度指数关键词', '上映年份', '开播日期', '收官日期', '电视台', '添加日期']];
+    let data = [['剧目类型', '剧目名称', '剧目id', '微博，微信，百度新闻关键词', '百度指数关键词', '上映年份', '开播日期', '收官日期', '电视台', '添加日期', '演员']];
     let films = [];
     if (argv === -1) {
       films = await Film.find({ status: 1, is_deleted: { $ne: true }, created_at: { $gte: moment().subtract(3, 'months') } });
@@ -65,6 +66,7 @@ const start = async () => {
       keywords = !keywords || keywords.length === 0 ? ['没有微博关键词'] : keywords.map(x => x.join('+'));
       let year = film.year || '没有上映年份数据',
         tvs = film.tvs,
+        actor_ids = film.actor_ids,
         release_date = film.release_date ? moment(film.release_date).format('YYYY-MM-DD') : '没有开播日期',
         ending_date = film.ending_date ? moment(film.ending_date).format('YYYY-MM-DD') : '没有收官日期',
         created_date = film.created_at ? moment(film.created_at).format('YYYY-MM-DD') : '没有添加日期';
@@ -73,7 +75,13 @@ const start = async () => {
       } else {
         tvs = ['没有电视台数据'];
       }
-      let temp = [cate, film.name.trim(), film._id, keywords.join(' ; '), baidu_index_keyword, year, release_date, ending_date, tvs.join(' ; '), created_date];
+
+      if (actor_ids && actor_ids.length > 0) {
+        actor_ids = await Promise.all(actor_ids.map(async (x) => (await Actor.findOne({ _id: x })).cname));
+      } else {
+        tvs = ['没有演员数据'];
+      }
+      let temp = [cate, film.name.trim(), film._id, keywords.join(' ; '), baidu_index_keyword, year, release_date, ending_date, tvs.join(' ; '), created_date, actor_ids.join(' ; ')];
       data.push(temp);
     }
     // console.log(data);

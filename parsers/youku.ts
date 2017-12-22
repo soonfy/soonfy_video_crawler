@@ -48,6 +48,37 @@ epona
           return text.replace(/\D/g, '') - 0;
         }
       }
+    },
+    episode: {
+      sels: ['.p-renew::text()'],
+      filters: (text) => {
+        let match = text.match(/(\d+)集全/);
+        if (match) {
+          return match[1] - 0;
+        } else {
+          match = text.match(/更新至(\d+)集/);
+          if (match) {
+            return match[1] - 0;
+          } else {
+            return 0;
+          }
+        }
+      }
+    },
+    showid: {
+      sels: ['script *::text()'],
+      filters: (texts) => {
+        texts = texts.filter(text => {
+          return text && text.includes('PageConfig');
+        })
+        if (texts.length !== 1) {
+          return null;
+        } else {
+          let text = texts[0];
+          let match = text.match(/showid\:\"([\w\d]+)\"/);
+          return match ? match[1] : null;
+        }
+      }
     }
   })
   .type('html')

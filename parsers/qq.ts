@@ -108,7 +108,7 @@ epona
 const crawlQQ = async (films) => {
   try {
     let promises = films.map(async (film) => {
-      let vids = [], plays = [];
+      let vids = [], plays = [], episode = 0;
       let vdata = await epona.queue(film.uri);
       console.log(vdata);
       if (!vdata.vid) {

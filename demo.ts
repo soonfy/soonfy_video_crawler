@@ -3,12 +3,12 @@ import * as Crawlers from './index';
 const start = async () => {
   try {
     console.time('film test');
-    let uri = process.argv[2] ? process.argv[2].trim() : 'http://www.mgtv.com/b/293193/4012652.html',
+    let uri = process.argv[2] ? process.argv[2].trim() : 'http://www.iqiyi.com/v_19rr7cwwiw.html',
       site;
-    
+
     let show_type = process.argv[3] ? process.argv[3].trim() - 0 : -1,
       year = process.argv[4] ? process.argv[4].trim() - 0 : 2017;
-    
+
     switch (true) {
       case uri.includes('iqiyi.com'):
         site = 'iqiyi';

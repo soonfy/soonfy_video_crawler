@@ -113,7 +113,9 @@ epona
  */
 epona
   .on(['cache.video.iqiyi.com/jp/avlist/'], {
+    // root: ':: html()',
     ids: ['vlist *::tvQipuId'],
+    episode: ['data::pt']
   })
   .beforeParse(body => body.match(/var\s*tvInfoJs\=([\w\W]*)/)[1])
   .type('xml')
@@ -174,14 +176,15 @@ epona
 const crawlIqiyi = async (films) => {
   try {
     let promises = films.map(async (film) => {
-      let vids = [], plays = [];
+      let vids = [], plays = [], episode = 0;
       let vdata = await epona.queue(film.uri);
       console.log(vdata);
       if (!vdata.vid) {
         console.error(`视频链接错误，未获取到 vid。`);
         return {
           vids,
-          plays
+          plays,
+          episode,
         }
       }
       let cid = vdata.cid;
@@ -234,6 +237,7 @@ const crawlIqiyi = async (films) => {
           // 儿童
           uri = `http://cache.video.iqiyi.com/jp/avlist/${vdata.vid}/`;
           ldata = await epona.queue(uri);
+          episode = ldata.episode - 0;
           // console.log(ldata);
           if (ldata.ids && ldata.ids.length >= 1) {
             vids = ldata.ids.slice(0, 1);
@@ -346,6 +350,7 @@ const crawlIqiyi = async (films) => {
               // 纪录片 --> 大国外交
               uri = `http://cache.video.iqiyi.com/jp/avlist/${vdata.vid}/`;
               ldata = await epona.queue(uri);
+              episode = ldata.episode - 0;
               // console.log(ldata);
               if (ldata.ids && ldata.ids.length >= 1) {
                 vids = ldata.ids.slice(0, 1);
@@ -379,7 +384,8 @@ const crawlIqiyi = async (films) => {
       }
       return {
         vids,
-        plays
+        plays,
+        episode: episode || plays.length,
       }
     })
     let data = await Promise.all(promises);
