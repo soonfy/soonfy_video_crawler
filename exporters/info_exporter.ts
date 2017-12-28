@@ -1,4 +1,3 @@
-import * as mongoose from 'mongoose';
 import * as moment from 'moment';
 
 import { Film } from '../models/film';
@@ -8,6 +7,7 @@ import { Film } from '../models/film';
  *  配置文件
  *
  */
+import * as mongoose from 'mongoose';
 let Config;
 try {
   Config = require('../../config.json');

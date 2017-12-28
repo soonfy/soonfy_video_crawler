@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import InfoExporter from './info_exporter';
 import { Film } from '../models/film';
 
-const csites = ['爱奇艺', '腾讯', '乐视', '搜狐', '优酷', '芒果'];
+const csites = ['爱奇艺', '腾讯', '乐视', '搜狐', '优酷', '芒果', 'pptv'];
 const cates = ['体育', '电影', '电视剧', '综艺', '网络剧', '网络综艺', '民生新闻', '动画电影', '动画剧集', '纪录片', '自媒体', '网络大电影', '民生节目', '大型综艺晚会', '广告短片', '其它-电视台', '其它-网络节目', '其它-其它'];
 
 const ensure_cate = (num) => {
@@ -39,7 +39,7 @@ const starter = async () => {
         '豆瓣链接', '豆瓣类型', '豆瓣评分', '评分人数',
         '导演', '演员', '编剧', '语言', '制作地区', '时光网链接', '出品公司', '制作公司',
         '播出平台', '电视台',
-        '添加日期',]];
+        '添加日期']];
       if (sheet.name.includes('剧目')) {
         let data = sheet.data;
         data = data.filter(x => x && x.length >= 5);
@@ -71,6 +71,9 @@ const starter = async () => {
     }
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/${argv}-剧目信息-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
+
+    console.log(`==============`);    
+    
     console.log('end.');
     process.exit();
   } catch (error) {

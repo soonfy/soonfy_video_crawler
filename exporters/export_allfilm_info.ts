@@ -32,7 +32,7 @@ const start = async () => {
         '豆瓣链接', '豆瓣类型', '豆瓣评分', '评分人数',
         '导演', '演员', '编剧', '语言', '制作地区', '时光网链接', '出品公司', '制作公司',
         '播出平台', '电视台',
-        '添加日期',]];
+        '添加日期']];
 
       let complete = 0;
       while (complete < all) {
@@ -48,6 +48,9 @@ const start = async () => {
     }
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/剧目数据库-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
+
+    console.log(`==============`);    
+    
     console.log('end.');
     process.exit();
   } catch (error) {

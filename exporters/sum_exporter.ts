@@ -26,7 +26,7 @@ console.log(Config);
 mongoose.connect(Config && Config.db && Config.db.uris);
 
 const sites = ['iqiyi', 'qq', 'letv', 'sohu', 'youku', 'mgtv', 'pptv'];
-const csites = ['爱奇艺', '腾讯', '乐视', '搜狐', '优酷', '芒果', 'PPTV'];
+const csites = ['爱奇艺', '腾讯', '乐视', '搜狐', '优酷', '芒果', 'pptv'];
 const cates = ['体育', '电影', '电视剧', '综艺', '网络剧', '网络综艺', '民生新闻', '动画电影', '动画剧集', '纪录片', '自媒体', '网络大电影', '民生节目', '大型综艺晚会', '广告短片', '其它-电视台', '其它-网络节目', '其它-其它'];
 
 const ensure_cate = (num) => {

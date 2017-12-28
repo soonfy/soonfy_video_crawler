@@ -49,6 +49,9 @@ const starter = async () => {
     }
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/${argv}-剧目分天播放量-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
+
+    console.log(`==============`);    
+    
     console.log('end.');
     process.exit();
   } catch (error) {
