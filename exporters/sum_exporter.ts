@@ -51,21 +51,21 @@ const summer = async (film_id, start, end) => {
       let result = [];
 
       let name = film.name,
-        cate = ensure_cate(film.category) || '没有剧目类型数据',
-        year = film.year || '没有上映年份数据',
+        cate = ensure_cate(film.category) || null,
+        year = film.year || null,
         tvs = film.tvs,
         tv_count = 0,
-        release_date = film.release_date ? moment(film.release_date).format('YYYY-MM-DD') : '没有开播日期',
-        ending_date = film.ending_date ? moment(film.ending_date).format('YYYY-MM-DD') : '没有收官日期';
+        release_date = film.release_date ? moment(film.release_date).format('YYYY-MM-DD') : null,
+        ending_date = film.ending_date ? moment(film.ending_date).format('YYYY-MM-DD') : null;
       if (tvs && tvs.length > 0) {
         tvs = await Promise.all(tvs.map(async (x) => (await TV.findOne({ _id: x })).name));
         tv_count = tvs.length;
       } else {
-        tvs = ['没有电视台数据'];
+        tvs = [];
       }
 
-      let show_type;      
-      let {episode, rank} = film;      
+      let show_type;
+      let { episode, rank } = film;
 
       let plays, sum, offset, plats, plat_count;
 
@@ -152,7 +152,7 @@ const summer = async (film_id, start, end) => {
 
       sum = plays.map(x => x._sum).reduce((a, b) => a + b, 0),
         offset = plays.map(x => x._offset).reduce((a, b) => a + b, 0),
-        plats = plays.map((x, i) => x._sum ? csites[i] : ''),
+        plats = plays.map((x, i) => x._sum ? csites[i] : null),
         plat_count = plats.filter(x => x).length;
 
       result = [cate, name, film_id, rank, show_type, episode, moment(start).format('YYYY-MM-DD'), moment(end).format('YYYY-MM-DD'), plat_count];
@@ -161,7 +161,7 @@ const summer = async (film_id, start, end) => {
       result = result.concat(plays.map(x => x._sum));
       result.push(offset);
       result = result.concat(plays.map(x => x._offset));
-      result = result.concat([year, release_date, ending_date, tv_count, tvs.join(' ; ')]);
+      result = result.concat([year, release_date, ending_date, tv_count, tvs.join('||') || null]);
       return result;
     }
   } catch (error) {

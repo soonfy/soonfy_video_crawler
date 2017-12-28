@@ -60,6 +60,37 @@
 ## exporters
 模板文件在 template 文件夹下
 
+### 根据 剧目id 或者 类型 导出播放总量
+
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-增量需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_film\_sumplay.js 20170806-增量需求
+  3. 输出文件在 output 文件夹下。
+  ```
+
+### 根据 剧目id 或者 类型 导出分天播放量
+
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-增量需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_film\_dayplay.js 20170806-增量需求
+  3. 输出文件在 output 文件夹下。
+  ```
+
+### 根据 剧目id 或者 类型 导出剧目信息
+
+  ```
+  1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-增量需求.xlsx”
+  2. 执行脚本。例如 node main/exporters/export_film\_info.js 20170806-增量需求
+  3. 输出文件在 output 文件夹下。
+  ```
+
+### 导出所有剧目信息
+
+  ```
+  1. 执行脚本。例如 node main/exporters/export_allfilm\_info.js
+  2. 输出文件在 output 文件夹下。
+  ```
+
 ### 根据剧目 id 导出一段时间的总量和增量
   ```
   1. 在 input 文件夹下输入需求文件xlsx。例如 文件“20170806-增量需求.xlsx”

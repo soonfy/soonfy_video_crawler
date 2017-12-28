@@ -1,6 +1,31 @@
 import * as mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
+import { FilmPlist } from './film_plist'
+
+import TV from '../models/tv';
+import Mtime from './mtime';
+import Star from './star';
+
+const datamap = {
+  iqiyi: '爱奇艺',
+  letv: '乐视视频',
+  mgtv: '芒果TV',
+  qq: '腾讯视频',
+  sohu: '搜狐视频',
+  tudou: '土豆网',
+  youku: '优酷',
+  pptv: 'pptv',
+  '爱奇艺': 'iqiyi',
+  '乐视视频': 'letv',
+  '芒果TV': 'mgtv',
+  '腾讯视频': 'qq',
+  '搜狐视频': 'sohu',
+  '土豆网': 'tudou',
+  '优酷': 'youku',
+}
+
+
 const FilmSchema = new Schema({
   // film site
   name: {
@@ -94,7 +119,115 @@ const FilmSchema = new Schema({
   reviews_count: Number,  // 影评
 })
 
+
+FilmSchema.methods.getSites = async function () {
+  let sites = await FilmPlist.find({ film_id: this._id, status: 0 });
+  let site_data = sites.map(x => {
+    return {
+      site: x.site,
+      csite: datamap[x.site],
+      uri: x.uri
+    }
+  })
+  return site_data
+}
+
+FilmSchema.methods.getCompany = async function () {
+  if (this.mtime_id) {
+    let mtimeFilms = await Mtime.findOne({ film_id: this.mtime_id })
+    let make_company
+    let release_company
+    let cost
+    let shooting_date
+    if (mtimeFilms && mtimeFilms.make_company) {
+      make_company = mtimeFilms.make_company.map(company => company.company_name)
+    } else {
+      make_company = []
+    }
+    if (mtimeFilms && mtimeFilms.release_company) {
+      release_company = mtimeFilms.release_company.map(company => company.company_name)
+    } else {
+      release_company = []
+    }
+    if (mtimeFilms && mtimeFilms.cost) {
+      cost = mtimeFilms.cost
+    } else {
+      cost = ''
+    }
+    if (mtimeFilms && mtimeFilms.shooting_date) {
+      shooting_date = mtimeFilms.shooting_date
+    } else {
+      shooting_date = ''
+    }
+
+    return {
+      make_company,
+      release_company,
+      cost,
+      shooting_date
+    }
+  } else {
+    return {
+      make_company: [],
+      release_company: [],
+      cost: '',
+      shooting_date: ''
+    }
+  }
+}
+
+FilmSchema.methods.getTvs = async function () {
+  if (this.tvs && this.tvs.length > 0) {
+    let tvsArr = await Promise.all(this.tvs.map(async (id) => {
+      let tv = await TV.findOne({ _id: id })
+      return tv.name
+    }))
+    return tvsArr
+  } else {
+    return []
+  }
+}
+
+FilmSchema.methods.getStarInfo = async function () {
+
+  let star = {
+    directors: [],
+    actors: [],
+    screenwriters: [],
+  }
+  if (this.director_ids && this.director_ids.length > 0) {
+    star.directors = await Promise.all(this.director_ids.map(async (id) => {
+      let star = await Star.findOne({ douban_id: id })
+      if (star) {
+        return star.cname
+      }
+    }))
+  }
+
+  if (this.actor_ids && this.actor_ids.length > 0) {
+    star.actors = await Promise.all(this.actor_ids.map(async (id) => {
+      let star = await Star.findOne({ douban_id: id })
+      if (star) {
+        return star.cname
+      }
+    }))
+  }
+
+  if (this.screenwriter_ids && this.screenwriter_ids.length > 0) {
+    star.screenwriters = await Promise.all(this.screenwriter_ids.map(async (id) => {
+      let star = await Star.findOne({ douban_id: id })
+      if (star) {
+        return star.cname
+      }
+    }))
+  }
+
+  return star;
+}
+
+
 const Film = mongoose.model('FILM', FilmSchema, 'films');
+
 
 export {
   Film
