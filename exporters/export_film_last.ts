@@ -30,6 +30,7 @@ const starter = async () => {
     console.log(date);
 
     let films = await Film.find({ status: 1, is_deleted: { $ne: true }, show_type: { $ne: 1 }, created_at: { $gte: date } });
+    console.log(films.length);
     for (let film of films) {
       let result = await InfoExporter(film._id);
       sheet_data.push(result);
