@@ -45,6 +45,7 @@ const starter = async () => {
         data = data.filter(x => x && x.length >= 5);
         data.shift();
         for (let line of data) {
+          console.log(line[1]);
           let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim();
           let result = await InfoExporter(film_id);
           sheet_data.push(result);
@@ -62,6 +63,7 @@ const starter = async () => {
           }
           console.log(`类型 ${cate} 总共 ${films.length} 条剧目。`);
           for (let film of films) {
+            console.log(film.name);
             let result = await InfoExporter(film._id);
             sheet_data.push(result);
           }
@@ -72,8 +74,8 @@ const starter = async () => {
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/${argv}-剧目信息-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
 
-    console.log(`==============`);    
-    
+    console.log(`==============`);
+
     console.log('end.');
     process.exit();
   } catch (error) {

@@ -38,6 +38,7 @@ const start = async () => {
       while (complete < all) {
         let _films = films.slice(complete, complete + 500);
         await Promise.all(_films.map(async (film) => {
+          console.log(film.name);
           data.push(await InfoExporter(film._id));
         }))
         complete += _films.length;
@@ -49,8 +50,8 @@ const start = async () => {
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/剧目数据库-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
 
-    console.log(`==============`);    
-    
+    console.log(`==============`);
+
     console.log('end.');
     process.exit();
   } catch (error) {

@@ -40,6 +40,7 @@ const starter = async () => {
         data = data.filter(x => x && x.length >= 5);
         data.shift();
         for (let line of data) {
+          console.log(line[1]);
           let film_id = typeof line[2] === 'number' ? line[2] : line[2].trim(),
             start = typeof line[3] === 'number' ? line[3] : line[3].trim(),
             end = typeof line[4] === 'number' ? line[4] : line[4].trim();
@@ -61,6 +62,7 @@ const starter = async () => {
           let start = line[1] && line[1].trim(),
             end = line[2] && line[2].trim();
           for (let film of films) {
+            console.log(film.name);
             let result = await SumExporter(film._id, start, end);
             sheet_data.push(result);
           }
@@ -71,8 +73,8 @@ const starter = async () => {
     let buffer = xlsx.build(content);
     fs.writeFileSync(`./output/${argv}-剧目总播放量-${moment().format('YYYY-MM-DD')}.xlsx`, buffer);
 
-    console.log(`==============`);    
-    
+    console.log(`==============`);
+
     console.log('end.');
     process.exit();
   } catch (error) {
