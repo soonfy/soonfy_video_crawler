@@ -173,6 +173,38 @@ epona
     console.error(error);
   })
 
+/**
+ * 
+ * 提取剧目列表
+ * 
+ */
+epona
+  .on(['list.iqiyi.com'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.site-piclist_pic_link *'],
+      nodes: {
+        name: ['::title', '::alt'],
+        uri: ['::href'],
+        id: ['::data-qipuid'],
+        info: ['::data-searchpingback-param']
+      }
+    },
+    next: ['.noPage ::text()']
+  })
+  .type('xml')
+  .then((data) => {
+    data.items = data.items || []
+    data.items.map(x => {
+      x.target = x.info.match(/target=([^&]+)&/)[1]
+      x.site = x.info.match(/site=([^&]+)&/)[1]
+    })
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlIqiyi = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -395,4 +427,43 @@ const crawlIqiyi = async (films) => {
   }
 }
 
-export { crawlIqiyi }
+let name_map = {
+  '电影': '1',
+  '电视剧': '2',
+  '综艺': '6',
+  '动漫': '4',
+  '纪录片': '3',
+  '网络电影': '16',
+  '资讯': '25',
+}
+const searchIqiyi = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `http://list.iqiyi.com/www/${ntype}/-----------${year}--4-1-1---.html`;
+    let pdata = await epona.queue(uri);
+    let { next = '', items = [] } = pdata
+    let videos = items;
+    while (!next.includes('下一页')) {
+      ++page;
+      uri = `http://list.iqiyi.com/www/${ntype}/-----------${year}--4-${page}-1---.html`;
+      pdata = await epona.queue(uri);
+      let { items = [] } = pdata
+      videos = videos.concat(items)
+      next = pdata.next || ''
+    }
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+(async () => {
+  // let uri = `http://list.iqiyi.com/www/2/17----------0-2017--4-1-1---.html`;
+  // let pdata = await epona.queue(uri);
+  await searchIqiyi({ type: '电视剧' })
+})()
+
+export { crawlIqiyi, searchIqiyi }

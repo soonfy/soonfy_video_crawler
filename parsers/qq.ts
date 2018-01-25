@@ -105,6 +105,44 @@ epona
     console.error(error);
   })
 
+/**
+ * 
+ * 提取剧目列表
+ * 
+ */
+epona
+  .on(['qq.com/x/list'], {
+    // root: ':: html()',
+    cids: {
+      sels: ['.list_item * ::__wind'],
+      filters: (winds) => winds.map(x => x.replace('cid=', ''))
+    },
+    items: {
+      sels: ['.figure_title > *'],
+      nodes: {
+        name: ['::text()', '::title'],
+        uri: ['::href']
+      }
+    },
+    scores: {
+      sels: ['.figure_score *'],
+      nodes: {
+        value: ['::text()'],
+      }
+    },
+    pages: ['._items a *'],
+  })
+  .type('xml')
+  .then((data, resp) => {
+    data.scores = data.scores ? data.scores.map(x => x.value.replace(/\s+/g, '')) : []
+    data.max_page = data.pages ? data.pages.slice(-1)[0] : 0
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlQQ = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -213,4 +251,64 @@ const crawlQQ = async (films) => {
   }
 }
 
-export { crawlQQ }
+let name_map = {
+  '电影': 'movie',
+  '电视剧': 'tv',
+  '综艺': 'variety',
+  '动漫': 'cartoon',
+  '纪录片': 'doco',
+  '新闻': 'news',
+}
+const searchQQ = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `http://v.qq.com/x/list/${ntype}?iyear=${year}&year=${year}&offset=${30 * (page - 1)}&iarea=-1&sort=19`;
+    let pdata = await epona.queue(uri);
+    let { max_page, items = [], cids = [], scores = [] } = pdata
+    let videos = [];
+    if (items.length === cids.length && items.length === scores.length) {
+      videos = items.map((x, i) => {
+        return {
+          name: x.name,
+          uri: x.uri,
+          cid: cids[i],
+          score: scores[i],
+          type,
+        }
+      })
+    }
+    console.log(max_page);
+    while (page < max_page) {
+      ++page;
+      uri = `http://v.qq.com/x/list/${ntype}?iyear=${year}&year=${year}&offset=${30 * (page - 1)}&iarea=-1&sort=19`;
+      pdata = await epona.queue(uri);
+      let { items = [], cids = [], scores = [] } = pdata
+      if (items.length === cids.length && items.length === scores.length) {
+        videos = videos.concat(items.map((x, i) => {
+          return {
+            name: x.name,
+            uri: x.uri,
+            cid: cids[i],
+            score: scores[i],
+            type,
+          }
+        }))
+      }
+    }
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// 剧目信息api http://node.video.qq.com/x/api/float_vinfo2?cid=qstahun0js2iywx
+// (async () => {
+//   // let uri = `http://v.qq.com/x/list/tv?iyear=2017&sort=19&iarea=818&offset=0&feature=2`;
+//   // let pdata = await epona.queue(uri);
+//   await searchQQ({type: '电影'});
+// })()
+
+export { crawlQQ, searchQQ }

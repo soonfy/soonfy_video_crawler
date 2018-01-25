@@ -33,7 +33,7 @@ epona
  *
  */
 epona
-  .on(['list.youku.com'], {
+  .on(['list.youku.com/show/id_'], {
     // root: ':: html()',
     value: {
       sels: ['.s-body .p-base li *::text()'],
@@ -90,6 +90,37 @@ epona
     console.error(error);
   })
 
+/**
+ * 
+ * 提取剧目列表
+ * 
+ */
+epona
+  .on(['list.youku.com/category/show/c_'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.box-series .p-thumb a *'],
+      nodes: {
+        name: ['::title'],
+        uri: ['::href'],
+      }
+    },
+    pages: ['.yk-pages li * ::text()']
+  })
+  .type('xml')
+  .then((data) => {
+    if (data.pages) {
+      data.max_page = data.pages.slice(-2)[0]
+    } else {
+      data.max_page = 0
+    }
+    console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlYouku = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -129,4 +160,60 @@ const crawlYouku = async (films) => {
   }
 }
 
-export { crawlYouku }
+let name_map = {
+  '电影': '96',
+  '电视剧': '97',
+  '综艺': '85',
+  '动漫': '100',
+}
+const searchYouku = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_5_d_1.html`;
+    let pdata = await epona.queue(uri);
+    let { max_page, items = [] } = pdata
+    let videos = [];
+    videos = items.map((x, i) => {
+      let uri = x.uri;
+      uri.startsWith('http') ? '' : uri = `http:${uri}`
+      uri = uri.slice(0, uri.indexOf('.html') + 5)
+      return {
+        name: x.name,
+        uri: uri,
+        type,
+      }
+    })
+    console.log(max_page);
+    while (page < max_page) {
+      ++page;
+      uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_5_d_1_p_${page}.html`;
+      pdata = await epona.queue(uri);
+      let { items = [] } = pdata
+      videos = videos.concat(items.map((x, i) => {
+        let uri = x.uri;
+        uri.startsWith('http') ? '' : uri = `http:${uri}`
+        uri = uri.slice(0, uri.indexOf('.html') + 5)
+        return {
+          name: x.name,
+          uri: uri,
+          type,
+        }
+      }))
+    }
+    console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// (async () => {
+//   // let uri = `http://list.youku.com/category/show/c_97_s_1_d_1_r_2017.html`;
+//   // uri = 'http://list.youku.com/category/show/c_97_r_2018_pt_3_s_1_d_1.html?spm=a2h1n.8251845.filterPanel.5!6~1~3!4~A'
+//   // let pdata = await epona.queue(uri);
+//   await searchYouku({ type: '电影' });
+// })()
+
+export { crawlYouku, searchYouku }
