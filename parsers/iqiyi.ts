@@ -460,10 +460,10 @@ const searchIqiyi = async (params) => {
   }
 }
 
-(async () => {
-  // let uri = `http://list.iqiyi.com/www/2/17----------0-2017--4-1-1---.html`;
-  // let pdata = await epona.queue(uri);
-  await searchIqiyi({ type: '电视剧' })
-})()
+// (async () => {
+//   // let uri = `http://list.iqiyi.com/www/2/17----------0-2017--4-1-1---.html`;
+//   // let pdata = await epona.queue(uri);
+//   await searchIqiyi({ type: '电视剧' })
+// })()
 
 export { crawlIqiyi, searchIqiyi }

@@ -114,7 +114,7 @@ epona
     } else {
       data.max_page = 0
     }
-    console.log(data);
+    // console.log(data);
     return data;
   })
   .catch((error) => {
@@ -163,6 +163,7 @@ const crawlYouku = async (films) => {
 let name_map = {
   '电影': '96',
   '电视剧': '97',
+  '剧集': '97',
   '综艺': '85',
   '动漫': '100',
 }
@@ -171,7 +172,7 @@ const searchYouku = async (params) => {
     let { type, year = 2017 } = params;
     let ntype = name_map[type];
     let page = 1;
-    let uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_5_d_1.html`;
+    let uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_6_d_1.html`;
     let pdata = await epona.queue(uri);
     let { max_page, items = [] } = pdata
     let videos = [];
@@ -188,7 +189,7 @@ const searchYouku = async (params) => {
     console.log(max_page);
     while (page < max_page) {
       ++page;
-      uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_5_d_1_p_${page}.html`;
+      uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_6_d_1_p_${page}.html`;
       pdata = await epona.queue(uri);
       let { items = [] } = pdata
       videos = videos.concat(items.map((x, i) => {
@@ -202,7 +203,7 @@ const searchYouku = async (params) => {
         }
       }))
     }
-    console.log(videos);
+    // console.log(videos);
     return videos;
   } catch (error) {
     console.error(error);
@@ -213,7 +214,7 @@ const searchYouku = async (params) => {
 //   // let uri = `http://list.youku.com/category/show/c_97_s_1_d_1_r_2017.html`;
 //   // uri = 'http://list.youku.com/category/show/c_97_r_2018_pt_3_s_1_d_1.html?spm=a2h1n.8251845.filterPanel.5!6~1~3!4~A'
 //   // let pdata = await epona.queue(uri);
-//   await searchYouku({ type: '电影' });
+//   await searchYouku({ type: '动漫' });
 // })()
 
 export { crawlYouku, searchYouku }

@@ -134,6 +134,46 @@ epona
     console.error(error);
   })
 
+/**
+* 
+* 提取剧目列表
+* 
+*/
+epona
+  .on(['so.tv.sohu.com/list_'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.st-list strong a *'],
+      nodes: {
+        name: ['::title', '::text()'],
+        uri: ['::href'],
+      }
+    },
+    pages: {
+      sels: ['.ssPages a *'],
+      nodes: {
+        page: ['::title', '::text()'],
+        uri: ['::href'],
+      }
+    }
+  })
+  .type('xml')
+  .then((data) => {
+    data.items = data.items.map((x, i) => {
+      let uri = x.uri;
+      uri.startsWith('http') ? '' : uri = `https:${uri}`
+      return {
+        name: x.name,
+        uri: uri,
+      }
+    })
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlSohu = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -226,4 +266,48 @@ const crawlSohu = async (films) => {
   }
 }
 
-export { crawlSohu }
+let name_map = {
+  '电影': '100',
+  '电视剧': '101',
+  '综艺': '106',
+  '动漫': '115',
+  '纪录片': '107',
+  '新闻': '122',
+}
+const searchSohu = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1, max_page;
+    let uri = `https://so.tv.sohu.com/list_p1${ntype}_p2_p3_p4${year}_p5_p6_p73_p8_p9_p10_p11_p12_p131.html`;
+    let pdata = await epona.queue(uri);
+    let { pages, items = [] } = pdata
+    let videos = items;
+    if (pages) {
+      pages.map(x => {
+        if (x.page - 0) {
+          max_page = x.page - 0
+        }
+      })
+    }
+    while (page < max_page) {
+      ++page;
+      let next = `https://so.tv.sohu.com/list_p1${ntype}_p2_p3_p4${year}_p5_p6_p73_p8_p9_p10${page}_p11_p12_p131.html`
+      pdata = await epona.queue(next);
+      let { items = [] } = pdata
+      videos = videos.concat(items)
+    }
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// (async () => {
+//   // let uri = `https://so.tv.sohu.com/list_p1101_p2_p3_p42017_p5_p6_p73_p8_p9_p10_p11_p12_p13.html`;
+//   // let pdata = await epona.queue(uri);
+//   await searchSohu({ type: '电影' })
+// })()
+
+export { crawlSohu, searchSohu }

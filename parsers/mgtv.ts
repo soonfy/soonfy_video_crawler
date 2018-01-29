@@ -27,6 +27,53 @@ epona
     console.error(error);
   })
 
+/**
+ *
+ *  提取剧目列表
+ *
+ */
+epona
+  .on(['list.mgtv.com'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.m-result-list-item .u-title *'],
+      nodes: {
+        name: ['::text()'],
+        uri: ['::href'],
+        info: ['::onclick'],
+      }
+    },
+    next: ['.next ::href'],
+    pages: {
+      sels: ['.w-pages a *'],
+      nodes: {
+        name: ['::text()'],
+        uri: ['::href'],
+      }
+    }
+  })
+  .type('xml')
+  .then((data) => {
+    data.items = data.items.map((x, i) => {
+      let uri = x.uri;
+      uri.startsWith('http') ? '' : uri = `https:${uri}`
+      uri = uri.slice(0, uri.indexOf('.html') + 5)
+      return {
+        name: x.name,
+        uri: uri,
+        info: x.info,
+      }
+    })
+    if (data.next) {
+      data.next.startsWith('http') ? '' : data.next = `https://list.mgtv.com${data.next}`
+    }
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlMgtv = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -54,4 +101,40 @@ const crawlMgtv = async (films) => {
   }
 }
 
-export { crawlMgtv }
+let name_map = {
+  '电影': '3',
+  '电视剧': '2',
+  '综艺': '1',
+  '动漫': '50',
+  '纪录片': '51',
+  '新闻': '106',
+}
+const searchMgtv = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `https://list.mgtv.com/-------------.html?channelId=${ntype}`;
+    let pdata = await epona.queue(uri);
+    let { next = '', items = [] } = pdata
+    let videos = items;
+    while (next) {
+      pdata = await epona.queue(next);
+      let { items = [] } = pdata
+      videos = videos.concat(items)
+      next = pdata.next || ''
+    }
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// (async () => {
+//   // let uri = `http://list.iqiyi.com/www/2/17----------0-2017--4-1-1---.html`;
+//   // let pdata = await epona.queue(uri);
+//   await searchMgtv({ type: '电视剧' })
+// })()
+
+export { crawlMgtv, searchMgtv }

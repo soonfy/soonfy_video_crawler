@@ -79,12 +79,68 @@ epona
     console.error(error);
   })
 
+/**
+* 
+* 提取剧目列表
+* 
+*/
+epona
+  .on(['list.le.com/listn/c'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.dl_list .p_t a *'],
+      nodes: {
+        name: ['::title', '::text()'],
+        uri: ['::href'],
+      }
+    },
+    next: ['.noPage ::text()']
+  })
+  .type('xml')
+  .then((data) => {
+    console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
+/**
+* 
+* 提取剧目列表 json
+* 
+*/
+epona
+  .on(['list.le.com/apin/chandata.json'], {
+    // root: ':: html()',
+    items: {
+      sels: ['album_list *'],
+      nodes: {
+        name: ['::name'],
+        vids: ['::vids'],
+        pid: ['::aid']
+      }
+    },
+    count: ['album_count | numbers']
+  })
+  .type('xml')
+  .then((data) => {
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlLetv = async (films) => {
   try {
     let promises = films.map(async (film) => {
       let vids = [], plays = [];
 
-      let vdata = {};
+      let vdata = {
+        vid: null,
+        cid: null,
+      };
       // 专辑页 都走综艺
       let match = film.uri.match(reg_list);
       if (match) {
@@ -172,4 +228,41 @@ const crawlLetv = async (films) => {
   }
 }
 
-export { crawlLetv }
+let name_map = {
+  '电影': '1',
+  '电视剧': '2',
+  '综艺': '11',
+  '动漫': '5',
+  '纪录片': '16',
+}
+const searchLetv = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `http://list.le.com/apin/chandata.json?c=${ntype}&d=1&md=&o=9&p=${page}&s=1&y=${year}`;
+    let pdata = await epona.queue(uri);
+    let { count, items = [] } = pdata;
+    console.log(count);
+    let videos = items;
+    while (page * 30 < count) {
+      ++page;
+      uri = `http://list.le.com/apin/chandata.json?c=${ntype}&d=1&md=&o=9&p=${page}&s=1&y=${year}`;
+      pdata = await epona.queue(uri);
+      let { items = [] } = pdata
+      videos = videos.concat(items)
+    }
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// (async () => {
+//   // let uri = `http://list.le.com/apin/chandata.json?c=1&d=1&md=&o=4&p=1&s=1&y=2017`;
+//   // let pdata = await epona.queue(uri);
+//   await searchLetv({ type: '电视剧' })
+// })()
+
+export { crawlLetv, searchLetv }
