@@ -199,15 +199,24 @@ const searchPptv = async (params) => {
     let { type, year = 2017 } = params;
     let ntype = name_map[type];
     let page = 1;
-    let uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+    let uri;
+    if (ntype !== '4') {
+      uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+    } else {
+      uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&sort=time`;
+    }
     let pdata = await epona.queue(uri);
     let { items = [] } = pdata;
     let length = items.length;
     // console.log(length);
     let videos = items;
-    while (length >= 30) {
+    while (length >= 42) {
       ++page;
-      uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+      if (ntype !== '4') {
+        uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+      } else {
+        uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&sort=time`;
+      }
       pdata = await epona.queue(uri);
       let { items = [] } = pdata
       videos = videos.concat(items)
@@ -226,10 +235,10 @@ const searchPptv = async (params) => {
   }
 }
 
-// (async () => {
-//   // let uri = `http://list.pptv.com/channel_list.html?page=1&type=2&year=2017&sort=time`;
-//   // let pdata = await epona.queue(uri);
-//   await searchPptv({ type: '电视剧' })
-// })()
+(async () => {
+  // let uri = `http://list.pptv.com/channel_list.html?page=1&type=2&year=2017&sort=time`;
+  // let pdata = await epona.queue(uri);
+  await searchPptv({ type: '综艺' })
+})()
 
 export { crawlPptv, searchPptv }
