@@ -275,7 +275,6 @@ const searchQQ = async (params) => {
           uri: x.uri,
           cid: cids[i],
           score: scores[i],
-          type,
         }
       })
     }
@@ -292,11 +291,16 @@ const searchQQ = async (params) => {
             uri: x.uri,
             cid: cids[i],
             score: scores[i],
-            type,
           }
         }))
       }
     }
+    videos = videos.map(x => {
+      x.site = 'qq';
+      x.type = type;
+      x.year = year;
+      return x;
+    })
     // console.log(videos);
     return videos;
   } catch (error) {

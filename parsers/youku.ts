@@ -183,7 +183,6 @@ const searchYouku = async (params) => {
       return {
         name: x.name,
         uri: uri,
-        type,
       }
     })
     console.log(max_page);
@@ -199,10 +198,15 @@ const searchYouku = async (params) => {
         return {
           name: x.name,
           uri: uri,
-          type,
         }
       }))
     }
+    videos = videos.map(x => {
+      x.site = 'youku';
+      x.type = type;
+      x.year = year;
+      return x;
+    })
     // console.log(videos);
     return videos;
   } catch (error) {
@@ -214,7 +218,7 @@ const searchYouku = async (params) => {
 //   // let uri = `http://list.youku.com/category/show/c_97_s_1_d_1_r_2017.html`;
 //   // uri = 'http://list.youku.com/category/show/c_97_r_2018_pt_3_s_1_d_1.html?spm=a2h1n.8251845.filterPanel.5!6~1~3!4~A'
 //   // let pdata = await epona.queue(uri);
-//   await searchYouku({ type: '动漫' });
+//   await searchYouku({ type: '电视剧' });
 // })()
 
 export { crawlYouku, searchYouku }

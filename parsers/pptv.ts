@@ -114,6 +114,34 @@ epona
     console.error(error);
   })
 
+
+/**
+* 
+* 提取剧目列表
+* 
+*/
+epona
+  .on(['list.pptv.com'], {
+    // root: ':: html()',
+    items: {
+      sels: ['.ui-list-ct *'],
+      nodes: {
+        name: ['.main-tt ::text()'],
+        uri: ['::href'],
+        ids: ['::tidbit'],
+      }
+    },
+  })
+  .cookie('ppi=302c31')
+  .type('xml')
+  .then((data) => {
+    // console.log(data);
+    return data;
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+
 const crawlPptv = async (films) => {
   try {
     let promises = films.map(async (film) => {
@@ -160,4 +188,48 @@ const crawlPptv = async (films) => {
   }
 }
 
-export { crawlPptv }
+let name_map = {
+  '电影': '1',
+  '电视剧': '2',
+  '综艺': '4',
+  '动漫': '3',
+}
+const searchPptv = async (params) => {
+  try {
+    let { type, year = 2017 } = params;
+    let ntype = name_map[type];
+    let page = 1;
+    let uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+    let pdata = await epona.queue(uri);
+    let { items = [] } = pdata;
+    let length = items.length;
+    // console.log(length);
+    let videos = items;
+    while (length >= 30) {
+      ++page;
+      uri = `http://list.pptv.com/channel_list.html?page=${page}&type=${ntype}&year=${year}&sort=time`;
+      pdata = await epona.queue(uri);
+      let { items = [] } = pdata
+      videos = videos.concat(items)
+      length = items.length;
+    }
+    videos = videos.map(x => {
+      x.site = 'pptv';
+      x.type = type;
+      x.year = year;
+      return x;
+    })
+    // console.log(videos);
+    return videos;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// (async () => {
+//   // let uri = `http://list.pptv.com/channel_list.html?page=1&type=2&year=2017&sort=time`;
+//   // let pdata = await epona.queue(uri);
+//   await searchPptv({ type: '电视剧' })
+// })()
+
+export { crawlPptv, searchPptv }

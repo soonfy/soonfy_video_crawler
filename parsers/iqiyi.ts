@@ -453,6 +453,12 @@ const searchIqiyi = async (params) => {
       videos = videos.concat(items)
       next = pdata.next || ''
     }
+    videos = videos.map(x => {
+      x.site = 'iqiyi';
+      x.type = type;
+      x.year = year;
+      return x;
+    })
     // console.log(videos);
     return videos;
   } catch (error) {

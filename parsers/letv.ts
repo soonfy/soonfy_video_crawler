@@ -252,6 +252,12 @@ const searchLetv = async (params) => {
       let { items = [] } = pdata
       videos = videos.concat(items)
     }
+    videos = videos.map(x => {
+      x.site = 'letv';
+      x.type = type;
+      x.year = year;
+      return x;
+    })
     // console.log(videos);
     return videos;
   } catch (error) {
