@@ -99,16 +99,26 @@ epona
   .on(['list.youku.com/category/show/c_'], {
     // root: ':: html()',
     items: {
-      sels: ['.box-series .p-thumb a *'],
+      sels: ['.yk-col4 *'],
       nodes: {
-        name: ['::title'],
-        uri: ['::href'],
+        name: ['.title a ::title', '.title a ::text()'],
+        uri: ['.title a ::href'],
+        img: ['img ::src'],
+        roles: ['.actor a *'],
+        info: ['.p-time ::text()'],
+        desc: ['.actor + li ::text()'],
+
       }
     },
     pages: ['.yk-pages li * ::text()']
   })
   .type('xml')
   .then((data) => {
+    data.items = data.items || []
+    data.items.map(x => {
+      x.uri.startsWith('http') ? '' : x.uri = `http:${x.uri}`
+      x.img.startsWith('http') ? '' : x.img = `http:${x.img}`
+    })
     if (data.pages) {
       data.max_page = data.pages.slice(-2)[0]
     } else {
@@ -175,31 +185,14 @@ const searchYouku = async (params) => {
     let uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_6_d_1.html`;
     let pdata = await epona.queue(uri);
     let { max_page, items = [] } = pdata
-    let videos = [];
-    videos = items.map((x, i) => {
-      let uri = x.uri;
-      uri.startsWith('http') ? '' : uri = `http:${uri}`
-      uri = uri.slice(0, uri.indexOf('.html') + 5)
-      return {
-        name: x.name,
-        uri: uri,
-      }
-    })
+    let videos = items;
     console.log(max_page);
     while (page < max_page) {
       ++page;
       uri = `http://list.youku.com/category/show/c_${ntype}_r_${year}_s_6_d_1_p_${page}.html`;
       pdata = await epona.queue(uri);
       let { items = [] } = pdata
-      videos = videos.concat(items.map((x, i) => {
-        let uri = x.uri;
-        uri.startsWith('http') ? '' : uri = `http:${uri}`
-        uri = uri.slice(0, uri.indexOf('.html') + 5)
-        return {
-          name: x.name,
-          uri: uri,
-        }
-      }))
+      videos = videos.concat(items)
     }
     videos = videos.map(x => {
       x.site = 'youku';

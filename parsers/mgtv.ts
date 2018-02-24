@@ -36,11 +36,13 @@ epona
   .on(['list.mgtv.com'], {
     // root: ':: html()',
     items: {
-      sels: ['.m-result-list-item .u-title *'],
+      sels: ['.m-result-list-item *'],
       nodes: {
-        name: ['::text()'],
-        uri: ['::href'],
-        info: ['::onclick'],
+        name: ['.u-title ::text()'],
+        uri: ['.u-title ::href'],
+        img: ['img ::src'],
+        roles: ['.u-desc a *'],
+        _info: ['.u-title ::onclick'],
       }
     },
     next: ['.next ::href'],
@@ -54,15 +56,10 @@ epona
   })
   .type('xml')
   .then((data) => {
-    data.items = data.items.map((x, i) => {
-      let uri = x.uri;
-      uri.startsWith('http') ? '' : uri = `https:${uri}`
-      uri = uri.slice(0, uri.indexOf('.html') + 5)
-      return {
-        name: x.name,
-        uri: uri,
-        info: x.info,
-      }
+    data.items.map((x, i) => {
+      x.uri.startsWith('http') ? '' : x.uri = `https:${x.uri}`
+      x.uri = x.uri.slice(0, x.uri.indexOf('.html') + 5)
+      x.img.startsWith('http') ? '' : x.img = `https:${x.img}`
     })
     if (data.next) {
       data.next.startsWith('http') ? '' : data.next = `https://list.mgtv.com${data.next}`

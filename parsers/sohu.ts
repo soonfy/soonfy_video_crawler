@@ -143,10 +143,13 @@ epona
   .on(['so.tv.sohu.com/list_'], {
     // root: ':: html()',
     items: {
-      sels: ['.st-list strong a *'],
+      sels: ['.st-list li *'],
       nodes: {
-        name: ['::title', '::text()'],
-        uri: ['::href'],
+        name: ['strong a ::title', 'strong a ::text()'],
+        uri: ['strong a ::href'],
+        img: ['img ::src'],
+        info: ['.maskTx'],
+        roles: ['.actor a *'],
       }
     },
     pages: {
@@ -159,13 +162,10 @@ epona
   })
   .type('xml')
   .then((data) => {
-    data.items = data.items.map((x, i) => {
-      let uri = x.uri;
-      uri.startsWith('http') ? '' : uri = `https:${uri}`
-      return {
-        name: x.name,
-        uri: uri,
-      }
+    data.items = data.items || []
+    data.items.map(x => {
+      x.uri.startsWith('http') ? '' : x.uri = `https:${x.uri}`
+      x.img.startsWith('http') ? '' : x.img = `https:${x.img}`
     })
     // console.log(data);
     return data;
@@ -297,6 +297,7 @@ const searchSohu = async (params) => {
       let { items = [] } = pdata
       videos = videos.concat(items)
     }
+    console.log(videos);
     videos = videos.map(x => {
       x.site = 'sohu';
       x.type = type;

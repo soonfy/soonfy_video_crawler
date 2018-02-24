@@ -124,11 +124,30 @@ epona
   .on(['list.pptv.com'], {
     // root: ':: html()',
     items: {
-      sels: ['.ui-list-ct *'],
+      sels: ['li *'],
       nodes: {
-        name: ['.main-tt ::text()'],
-        uri: ['::href'],
-        ids: ['::tidbit'],
+        name: ['.ui-list-ct .main-tt ::text()'],
+        uri: ['.ui-list-ct ::href'],
+        ids: ['.ui-list-ct ::tidbit'],
+        img: ['.ui-list-ct img ::data-src2'],
+        info: ['.ui-list-ct .msk-txt'],
+        score: ['.ui-list-ct .ui-txt em'],
+        roles: {
+          sels: ['.v_info p:first-of-type'],
+          filters: (value) => {
+            value = value.split(/['：,]/)
+            value = value && value.slice(1)
+            return value
+          }
+        },
+        directors: {
+          sels: ['.v_info p:last-of-type'],
+          filters: (value) => {
+            value = value.split(/['：,]/)
+            value = value && value.slice(1)
+            return value
+          }
+        }
       }
     },
   })
@@ -235,10 +254,10 @@ const searchPptv = async (params) => {
   }
 }
 
-(async () => {
-  // let uri = `http://list.pptv.com/channel_list.html?page=1&type=2&year=2017&sort=time`;
-  // let pdata = await epona.queue(uri);
-  await searchPptv({ type: '综艺' })
-})()
+// (async () => {
+//   // let uri = `http://list.pptv.com/channel_list.html?page=1&type=2&year=2017&sort=time`;
+//   // let pdata = await epona.queue(uri);
+//   await searchPptv({ type: '综艺' })
+// })()
 
 export { crawlPptv, searchPptv }

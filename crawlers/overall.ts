@@ -7,13 +7,13 @@ import * as moment from 'moment';
  *  视频爬虫分流
  *
  */
-import { crawlIqiyi } from '../parsers/iqiyi';
-import { crawlQQ } from '../parsers/qq';
+import { crawlIqiyi, searchIqiyi } from '../parsers/iqiyi';
+import { crawlQQ, searchQQ } from '../parsers/qq';
 import { crawlLetv } from '../parsers/letv';
-import { crawlSohu } from '../parsers/sohu';
-import { crawlYouku } from '../parsers/youku';
-import { crawlMgtv } from '../parsers/mgtv';
-import { crawlPptv } from '../parsers/pptv';
+import { crawlSohu, searchSohu } from '../parsers/sohu';
+import { crawlYouku, searchYouku } from '../parsers/youku';
+import { crawlMgtv, searchMgtv } from '../parsers/mgtv';
+import { crawlPptv, searchPptv } from '../parsers/pptv';
 import { crawlAcfun } from '../parsers/acfun';
 
 
@@ -500,6 +500,30 @@ const export_film = async (date) => {
   }
 }
 
+/**
+ *
+ *  search videos
+ *  属性 uri, site, showType, year
+ * 
+ */
+const search_video = async () => {
+  try {
+    let params = {
+      type: '综艺',
+      year: 2017
+    }
+    // let data = await searchIqiyi(params);
+    // let data = await searchQQ(params);
+    // let data = await searchSohu(params);
+    // let data = await searchYouku(params);
+    // let data = await searchMgtv(params);
+    let data = await searchPptv(params);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export {
   crawl,
   store,
@@ -510,3 +534,5 @@ export {
   export_play,
   export_film
 }
+
+search_video()

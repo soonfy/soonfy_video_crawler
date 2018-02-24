@@ -182,22 +182,30 @@ epona
   .on(['list.iqiyi.com'], {
     // root: ':: html()',
     items: {
-      sels: ['.site-piclist_pic_link *'],
+      sels: ['.site-piclist li *'],
       nodes: {
-        name: ['::title', '::alt'],
-        uri: ['::href'],
-        id: ['::data-qipuid'],
-        info: ['::data-searchpingback-param']
+        name: ['.site-piclist_pic_link ::title', '.site-piclist_pic_link ::alt'],
+        uri: ['.site-piclist_pic_link ::href'],
+        img: ['img ::src'],
+        id: ['.site-piclist_pic_link ::data-qipuid'],
+        param: ['.site-piclist_pic_link ::data-searchpingback-param'],
+        roles: ['.role_info em *'],
+        desc: ['.role_info > a ::title'],
+        info: ['.icon-vInfo ::text()'],
+        score: ['.score ::text()']
       }
     },
-    next: ['.noPage ::text()']
+    next: ['.a1 ::text()']
   })
   .type('xml')
   .then((data) => {
     data.items = data.items || []
     data.items.map(x => {
-      x.target = x.info.match(/target=([^&]+)&/)[1]
-      x.site = x.info.match(/site=([^&]+)&/)[1]
+      x.target = x.param.match(/target=([^&]+)&/)[1]
+      x.site = x.param.match(/site=([^&]+)&/)[1]
+      x.roles = x.roles ? x.roles.map(x => x.trim()).slice(1) : []
+      x.info = x.info && x.info.trim()
+      x.img = x.img && (!x.img.startsWith('http')) ? 'http:' + x.img.trim() : x.img
     })
     return data;
   })
@@ -445,7 +453,7 @@ const searchIqiyi = async (params) => {
     let pdata = await epona.queue(uri);
     let { next = '', items = [] } = pdata
     let videos = items;
-    while (!next.includes('下一页')) {
+    while (next.includes('下一页')) {
       ++page;
       uri = `http://list.iqiyi.com/www/${ntype}/-----------${year}--4-${page}-1---.html`;
       pdata = await epona.queue(uri);

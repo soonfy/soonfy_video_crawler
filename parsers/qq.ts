@@ -113,28 +113,30 @@ epona
 epona
   .on(['qq.com/x/list'], {
     // root: ':: html()',
-    cids: {
-      sels: ['.list_item * ::__wind'],
-      filters: (winds) => winds.map(x => x.replace('cid=', ''))
-    },
     items: {
-      sels: ['.figure_title > *'],
+      sels: ['.list_item *'],
       nodes: {
-        name: ['::text()', '::title'],
-        uri: ['::href']
-      }
-    },
-    scores: {
-      sels: ['.figure_score *'],
-      nodes: {
-        value: ['::text()'],
+        name: ['.figure_title > a ::text()', '.figure_title > a ::title'],
+        uri: ['.figure_title > a ::href'],
+        img: ['img ::r-lazyload'],
+        id: ['::__wind'],
+        roles: ['.figure_desc a *'],
+        desc: ['.figure_desc ::title', '.figure_desc ::text()'],
+        info: ['.figure_info ::text()'],
+        score: ['.figure_score ::text()']
       }
     },
     pages: ['._items a *'],
   })
   .type('xml')
   .then((data, resp) => {
-    data.scores = data.scores ? data.scores.map(x => x.value.replace(/\s+/g, '')) : []
+    data.items = data.items || []
+    data.items.map(x => {
+      x.id = x.id && x.id.replace('cid=', '')
+      x.roles = x.roles ? x.roles.map(x => x.trim()) : []
+      x.score = x.score && x.score.replace(/\s+/g, '')
+      x.img = x.img && (!x.img.startsWith('http')) ? 'http:' + x.img.trim() : x.img
+    })
     data.max_page = data.pages ? data.pages.slice(-1)[0] : 0
     // console.log(data);
     return data;
@@ -266,34 +268,15 @@ const searchQQ = async (params) => {
     let page = 1;
     let uri = `http://v.qq.com/x/list/${ntype}?iyear=${year}&year=${year}&offset=${30 * (page - 1)}&iarea=-1&sort=19`;
     let pdata = await epona.queue(uri);
-    let { max_page, items = [], cids = [], scores = [] } = pdata
-    let videos = [];
-    if (items.length === cids.length && items.length === scores.length) {
-      videos = items.map((x, i) => {
-        return {
-          name: x.name,
-          uri: x.uri,
-          cid: cids[i],
-          score: scores[i],
-        }
-      })
-    }
+    let { max_page, items = [] } = pdata
+    let videos = items;
     console.log(max_page);
     while (page < max_page) {
       ++page;
       uri = `http://v.qq.com/x/list/${ntype}?iyear=${year}&year=${year}&offset=${30 * (page - 1)}&iarea=-1&sort=19`;
       pdata = await epona.queue(uri);
-      let { items = [], cids = [], scores = [] } = pdata
-      if (items.length === cids.length && items.length === scores.length) {
-        videos = videos.concat(items.map((x, i) => {
-          return {
-            name: x.name,
-            uri: x.uri,
-            cid: cids[i],
-            score: scores[i],
-          }
-        }))
-      }
+      let { items = [] } = pdata
+      videos = videos.concat(items)
     }
     videos = videos.map(x => {
       x.site = 'qq';
