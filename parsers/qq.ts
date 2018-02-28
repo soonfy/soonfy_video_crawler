@@ -12,6 +12,18 @@ epona
   .on(['v.qq.com/detail'], {
     text: {
       sels: ['#_mod_comments::r-props'],
+    },
+    episode: {
+      sels: ['._playsrc_series .item *'],
+      filters: (items) => {
+        return items.map(x => x.trim() - 0)
+      }
+    },
+    episode_all: {
+      sels: ['._playsrc_series .item_all a::data-range'],
+    },
+    play: {
+      sels: ['._playsrc .btn_primary .icon_text']
     }
   })
   .type('xml')
@@ -22,6 +34,17 @@ epona
     let id = JSON.parse(text);
     data.vid = id.vid;
     data.cid = id.cid - 0;
+    if (data.episode_all) {
+      data.episode_all = data.episode_all.split('-')[1] - 0;
+    }
+    if (data.episode) {
+      data.episode = data.episode.filter(x => x && x - 0).slice(-1)[0];
+    }
+    if (data.episode || data.episode_all) {
+      // pass
+    } else if (data.play) {
+      data.episode = 1;
+    }
     return data;
   })
   .catch((error) => {
@@ -35,27 +58,96 @@ epona
  */
 epona
   .on(['cover'], {
+    // root: ':: html()',
+
     vid: {
-      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/, /id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/, /\"id\"\:\"([\w\d]+)\"\,/],
-      filters: (match) => match && match[1]
+      sels: [/columnid\:\s*\"?([\w\d]+)\"?\,/,
+        /id\:\s*\"?([\w\d]+)\"?\,/,
+        /\"cover\_id\"\:\"([\w\d]+)\"\,/,
+        /\"id\"\:\"([\w\d]+)\"\,/],
+      // filters: (match) => match && match[1]
+      filters: (match) => {
+        if (match) {
+          return match[1]
+        }
+      }
     },
     id: {
-      sels: [/id\:\s*\"?([\w\d]+)\"?\,/, /\"cover\_id\"\:\"([\w\d]+)\"\,/, /\"id\"\:\"([\w\d]+)\"\,/],
-      filters: (match) => match && match[1]
+      sels: [/id\:\s*\"?([\w\d]+)\"?\,/,
+        /\"cover\_id\"\:\"([\w\d]+)\"\,/,
+        /\"id\"\:\"([\w\d]+)\"\,/],
+      // filters: (match) => match && match[1]
+      filters: (match) => {
+        if (match) {
+          return match[1]
+        }
+      }
     },
     bvid: {
-      sels: [/column_id\\":\s*\"?([\w\d]+)\"?\,/, /c\_column\_id\:\s*\"?([\w\d]+)\"?\,/, /\"column\_id\"\:\"([\w\d]+)\"\,/],
-      filters: (match) => match && match[1]
+      sels: [/column_id\\":\s*\"?([\w\d]+)\"?\,/,
+        /c\_column\_id\:\s*\"?([\w\d]+)\"?\,/,
+        /\"column\_id\"\:\"([\w\d]+)\"\,/],
+      // filters: (match) => match && match[1]
+      filters: (match) => {
+        if (match) {
+          return match[1]
+        }
+      }
     },
     cid: {
-      sels: [/var\s*VIDEO\_INFO\s*\=\s*\{[\w\W]+?type\"*\s*\:\s*\"*(\d+)/, /var\s*COVER\_INFO\s*\=\s*\{[\w\W]+?typeid\"*\s*\:\s*\"*(\d+)/,],
-      filters: (match) => match && match[1] - 0
-    }
+      sels: [/var\s*VIDEO\_INFO\s*\=\s*\{[\w\W]+?type\"*\s*\:\s*\"*(\d+)/,
+        /var\s*COVER\_INFO\s*\=\s*\{[\w\W]+?typeid\"*\s*\:\s*\"*(\d+)/],
+      // filters: (match) => match && match[1] - 0
+      filters: (match) => {
+        if (match) {
+          return match[1] - 0
+        }
+      }
+    },
+    // episode: {
+    //   sels: [/\"current_num\"\:(\d+)\,/],
+    //   // filters: (match) => match && match[1] - 0
+    //   filters: (match) => {
+    //     if (match) {
+    //       return match[1] - 0
+    //     }
+    //   }
+    // },
+
+    // cover_info: {
+    //   sels: [/var\s*COVER_INFO\s*=\s*(.*)/],
+    //   filters: (match) => {
+    //     if (match) {
+    //       return JSON.parse(match[1])
+    //     }
+    //   }
+    // },
+    // column_info: {
+    //   sels: [/var\s*COLUMN_INFO\s*=\s*(.*)/],
+    //   filters: (match) => {
+    //     if (match) {
+    //       return JSON.parse(match[1])
+    //     }
+    //   }
+    // },
+    // video_info: {
+    //   sels: [/var\s*VIDEO_INFO\s*=\s*(.*)/],
+    //   filters: (match) => {
+    //     if (match) {
+    //       return JSON.parse(match[1])
+    //     }
+    //   }
+    // }
   })
   .type('xml')
   .then((data, resp) => {
-    data.vid - 0 === 0 ? data.vid = data.id : '';
     // console.log(data);
+    // data.vid = data.cover_info.id || data.cover_info.cover_id || data.cover_info.column_id
+    // data.cid = data.video_info.type || data.cover_info.typeid || data.column_info.type
+    // data.episode = data.cover_info.video_ids.length
+    // data.bvid = data.cover_info.column_id || data.column_info.c_column_id || data.column_info.column_id
+
+    data.vid - 0 === 0 ? data.vid = data.id : '';
     return data;
   })
   .catch((error) => {
@@ -72,7 +164,7 @@ epona
     // root: ':: html()',
     ids: ['playlist *::id'],
     years: ['year *::text()'],
-    total: ['video_play_list ::total_episode']
+    episode_all: ['video_play_list ::total_episode']
   })
   .beforeParse(body => body.match(/QZOutputJson\=([\w\W]*)\;/)[1])
   .type('xml')
@@ -155,9 +247,11 @@ const crawlQQ = async (films) => {
         console.error(`视频链接错误，未获取到 vid。`);
         return {
           vids,
-          plays
+          plays,
+          episode
         }
       }
+      episode = vdata.episode;
       let uri, ldata, pdata, uris, value;
       switch (vdata.cid) {
         // 单个 id
@@ -234,6 +328,7 @@ const crawlQQ = async (films) => {
           pdata.map(x => {
             plays.push(x.value);
           })
+          episode = plays.length;
           break;
 
         default:
@@ -243,10 +338,12 @@ const crawlQQ = async (films) => {
       }
       return {
         vids,
-        plays
+        plays,
+        episode
       }
     })
     let data = await Promise.all(promises);
+    console.log(data);
     return data[0];
   } catch (error) {
     console.error(error);
@@ -290,6 +387,27 @@ const searchQQ = async (params) => {
     console.error(error);
   }
 }
+
+(async () => {
+  let film = {
+    // uri: 'https://v.qq.com/x/cover/xo254buvx49axu6.html',
+    uri: 'https://v.qq.com/x/cover/0r16x32f2ncqgiv.html',
+    // uri: 'https://v.qq.com/x/cover/cm02hs4nwdr035l.html',
+    // uri: 'https://v.qq.com/x/cover/1efvvnobsa3zbcc/g0025r68php.html',
+    // uri: 'https://v.qq.com/x/cover/ly2d18qrdchs2mm.html',
+
+    // uri: 'https://v.qq.com/detail/l/ly2d18qrdchs2mm.html',
+    // uri: 'https://v.qq.com/detail/0/033i818h6hqga2i.html',
+    // uri: 'https://v.qq.com/detail/5/5joh9y90crzqgsj.html',
+    // uri: 'https://v.qq.com/detail/7/70584.html',
+    // uri: 'https://v.qq.com/detail/1/1efvvnobsa3zbcc.html',
+    // uri: 'https://v.qq.com/detail/j/jzhtr2cgy35ejz0.html',
+    // uri: 'https://v.qq.com/detail/t/t6udtxyvbhbbxv2.html',
+    show_type: -1,
+    year: 2017,
+  }
+  // await crawlQQ([film]);
+})()
 
 // 剧目信息api http://node.video.qq.com/x/api/float_vinfo2?cid=qstahun0js2iywx
 // (async () => {

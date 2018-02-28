@@ -94,7 +94,7 @@ const crawl = async (films) => {
 
         default:
           console.error(`site ${film.site} is error.`);
-          process.exit();
+          // process.exit();
           break;
       }
       data = _.assign(film, data);
@@ -535,4 +535,4 @@ export {
   export_film
 }
 
-search_video()
+// search_video()

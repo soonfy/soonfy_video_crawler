@@ -13,7 +13,7 @@ const reg_play = /(http\:\/\/v\.youku\.com\/v_show\/id\_[\w\d=]+\.html)/;
 epona
   .on(['youku.com/v_show/id_'], {
     // root: ':: html()',
-    luri: ".desc-link::href"
+    luri: [".desc-link::href", '.tvinfo a::href']
   })
   .type('html')
   .then((data) => {
@@ -49,22 +49,6 @@ epona
         }
       }
     },
-    episode: {
-      sels: ['.p-renew::text()'],
-      filters: (text) => {
-        let match = text.match(/(\d+)集全/);
-        if (match) {
-          return match[1] - 0;
-        } else {
-          match = text.match(/更新至(\d+)集/);
-          if (match) {
-            return match[1] - 0;
-          } else {
-            return 0;
-          }
-        }
-      }
-    },
     showid: {
       sels: ['script *::text()'],
       filters: (texts) => {
@@ -79,11 +63,27 @@ epona
           return match ? match[1] : null;
         }
       }
-    }
+    },
+    episode: {
+      sels: ['.p-renew::text()'],
+    },
   })
   .type('html')
   .then((data) => {
     // console.log(data);
+    if (data.episode) {
+      let match = data.episode.match(/(\d+)集全/);
+      if (match) {
+        data.episode = match[1] - 0;
+      } else {
+        match = data.episode.match(/更新至(\d+)集/);
+        if (match) {
+          data.episode = match[1] - 0;
+        } else {
+          data.episode = 0;
+        }
+      }
+    }
     return data;
   })
   .catch((error) => {

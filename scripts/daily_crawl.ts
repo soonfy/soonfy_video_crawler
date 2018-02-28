@@ -5,7 +5,7 @@
  */
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
-import * as monitor from 'monitor-node';
+// import * as monitor from 'monitor-node';
 
 import * as Crawlers from '../index';
 
@@ -30,7 +30,7 @@ try {
   }
 }
 // console.log(Config);
-const connection = mongoose.createConnection(Config && Config.db && Config.db.monitor);
+// const connection = mongoose.createConnection(Config && Config.db && Config.db.monitor);
 
 const sleep = async (ss) => {
   return new Promise((resolve) => {
@@ -84,8 +84,8 @@ const start = async () => {
       console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
       console.log(`----------------->`);
       console.log(`开始下一次采集。`);
-      let task = await monitor.update(connection);
-      console.log(task);
+      // let task = await monitor.update(connection);
+      // console.log(task);
     }
   } catch (error) {
     console.error(error);

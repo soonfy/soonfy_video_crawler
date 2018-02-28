@@ -10,7 +10,9 @@ const epona = Epona.new({ concurrent: 10 });
 epona
   .on(['iqiyi.com/a_'], {
     vid: ['#widget-playcount::data-playcount-albumid',
-      '.album-fun-fav::data-subscribe-albumid'],
+      '.album-fun-fav::data-subscribe-albumid',
+      '.effect-score::data-score-tvid',
+      '.m-feedVideo-conWrap::data-video-albumId'],
     cid: {
       sels: /cid\s*:\s*(\d+)\,/,
       filters: (match) => match[1] - 0
@@ -115,7 +117,9 @@ epona
   .on(['cache.video.iqiyi.com/jp/avlist/'], {
     // root: ':: html()',
     ids: ['vlist *::tvQipuId'],
-    episode: ['data::pt']
+    episode_now: ['data::pt'],
+    episode_all: ['data::pm'],
+    episode: ['data::pn'],
   })
   .beforeParse(body => body.match(/var\s*tvInfoJs\=([\w\W]*)/)[1])
   .type('xml')
@@ -429,6 +433,7 @@ const crawlIqiyi = async (films) => {
       }
     })
     let data = await Promise.all(promises);
+    // console.log(data);
     return data[0];
   } catch (error) {
     console.error(error);
@@ -475,9 +480,20 @@ const searchIqiyi = async (params) => {
 }
 
 // (async () => {
+//   let film = {
+//     uri: 'http://www.iqiyi.com/a_19rrh0a5bh.html#vfrm=2-4-0-1',
+//     show_type: -1,
+//     year: 2017,
+//   }
+//   await crawlIqiyi([film])
+// })()
+
+
+// (async () => {
 //   // let uri = `http://list.iqiyi.com/www/2/17----------0-2017--4-1-1---.html`;
 //   // let pdata = await epona.queue(uri);
 //   await searchIqiyi({ type: '电视剧' })
 // })()
+
 
 export { crawlIqiyi, searchIqiyi }

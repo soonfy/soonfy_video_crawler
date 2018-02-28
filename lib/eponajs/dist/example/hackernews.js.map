@@ -1,0 +1,1 @@
+{"version":3,"file":"hackernews.js","sourceRoot":"","sources":["../../example/hackernews.js"],"names":[],"mappings":";;;;;;;;;AAAA,kCAAiC;AAE3B,IAAI,GAAG,GAAG;IAEd,IAAI,IAAI,GAAG,MAAM,KAAK,CAAC,GAAG,CAAC;QACzB,GAAG,EAAE,2DAA2D,EAAE,OAAO,EAAE,EAAC,MAAM,EAAE,aAAa,EAAC;KAAE,EACpG,aAAa,CAAC,CAAA;IAChB,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,CAAA;AACnB,CAAC,CAAA,CAAA;AAED,GAAG,EAAE,CAAA"}

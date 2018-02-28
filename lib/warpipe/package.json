@@ -1,0 +1,21 @@
+{
+  "name": "warpipe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test:all": "mocha dist/test/*.js",
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "extract-values": "^0.1.2",
+    "lodash": "^4.17.4",
+    "string-template": "^1.0.0"
+  }
+}
