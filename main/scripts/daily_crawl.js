@@ -33,7 +33,7 @@ const sleep = (ss) => __awaiter(this, void 0, void 0, function* () {
 });
 const main = () => __awaiter(this, void 0, void 0, function* () {
     try {
-        let delay = 1000 * 60 * 10;
+        let delay = 1000 * 60 * 30;
         let film = yield film_plist_1.FilmPlist.findOneAndUpdate({ crawled_status: 1, crawled_at: { $lt: Date.now() - delay } }, { $set: { crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });
         if (!film) {
             film = yield film_plist_1.FilmPlist.findOneAndUpdate({ crawled_status: 0 }, { $set: { crawled_status: 1, crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });

@@ -41,7 +41,7 @@ const sleep = async (ss) => {
 
 const main = async () => {
   try {
-    let delay = 1000 * 60 * 10;
+    let delay = 1000 * 60 * 30;
     let film = await FilmPlist.findOneAndUpdate({ crawled_status: 1, crawled_at: { $lt: Date.now() - delay } }, { $set: { crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });
     if (!film) {
       film = await FilmPlist.findOneAndUpdate({ crawled_status: 0 }, { $set: { crawled_status: 1, crawled_at: new Date() } }, { sort: { crawled_at: 1 }, new: true });
